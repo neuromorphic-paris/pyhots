@@ -8,4 +8,7 @@ Created on Mon Jun 10 20:15:18 2019
 
 from blink_loader import blink_loader
 
-blink_loader('/home/gregorlenz/Recordings/face-detection/face-detection-data-set')
+data_set_base_path = '/home/gregorlenz/Recordings/face-detection/face-detection-data-set/'
+data_set = 'indoor'
+
+blink_loader(data_set_base_path + data_set)
