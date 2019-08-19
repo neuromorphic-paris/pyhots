@@ -7,12 +7,13 @@ Created on Thu Aug  8 15:01:27 2019
 """
 import os
 import os.path
+import numpy as np
 from Dataset import Dataset
 from utils import check_integrity, download_and_extract_archive
 
 
 class NMNIST(Dataset):
-    """ǸMNIST <https://www.garrickorchard.com/datasets/n-mnist>`_ data set.
+    """`NMNIST <https://www.garrickorchard.com/datasets/n-mnist>`_ data set.
 
     arguments:
         train: choose training or test set
@@ -26,8 +27,11 @@ class NMNIST(Dataset):
     test_md5 = '69CA8762B2FE404D9B9BAD1103E97832'
     train_md5 = '20959B8E626244A1B502305A9E6E2031'
 
-    def __init__(self, save_to, train=True, transforms=None, download=False):
-        super(NMNIST, self).__init__(save_to, transforms=transforms)
+    classes = ['0 - zero', '1 - one', '2 - two', '3 - three', '4 - four',
+               '5 - five', '6 - six', '7 - seven', '8 - eight', '9 - nine']
+
+    def __init__(self, save_to, train=True, transform=None, download=False):
+        super(NMNIST, self).__init__(save_to, transform=transform)
 
         self.train = train
 
@@ -40,15 +44,36 @@ class NMNIST(Dataset):
             self.file_md5 = self.test_md5
             self.filename = 'nmnist_test.zip'
 
-        self.data = []
-        self.targets = []
-
         if download:
             self.download()
 
         if not self._check_integrity():
             raise RuntimeError('Dataset not found or corrupted.' +
                                ' You can use download=True to download it')
+
+        for path, dirs, files in os.walk('./data/Test'):
+            for file in files:
+                if file.endswith('bin'):
+                    events = self._read_nmnist_file(path + '/' + file)
+                    self.data.append(events)
+                    self.targets.append(path[-1])
+
+    def __getitem__(self, index):
+        """
+        Args:
+            index (int): Index
+        Returns:
+            tuple: (events, target) where target is index of the target class.
+        """
+        events, target = self.data[index], int(self.targets[index])
+
+        if self.transform is not None:
+            events = self.transform(events)
+
+        return events, target
+
+    def __len__(self):
+        return len(self.data)
 
     def download(self):
         download_and_extract_archive(self.url, self.location_on_system,
@@ -60,3 +85,32 @@ class NMNIST(Dataset):
         if not check_integrity(fpath, self.file_md5):
             return False
         return True
+
+    def _read_nmnist_file(self, filename):
+        f = open(filename, 'rb')
+        raw_data = np.fromfile(f, dtype=np.uint8)
+        f.close()
+        raw_data = np.uint32(raw_data)
+
+        all_y = raw_data[1::5]
+        all_x = raw_data[0::5]
+        all_p = (raw_data[2::5] & 128) >> 7  # bit 7
+        all_ts = ((raw_data[2::5] & 127) << 16) | (raw_data[3::5] << 8) | (raw_data[4::5])
+
+        # Process time stamp overflow events
+        time_increment = 2 ** 13
+        overflow_indices = np.where(all_y == 240)[0]
+        for overflow_index in overflow_indices:
+            all_ts[overflow_index:] += time_increment
+
+        # Everything else is a proper td spike
+        td_indices = np.where(all_y != 240)[0]
+
+        td = np.empty([td_indices.size, 4])
+
+        td[:,0] = all_x[td_indices]
+        td[:,1] = all_y[td_indices]
+        td[:,2] = all_ts[td_indices]
+        td[:,3] = all_p[td_indices]
+        return td
+
