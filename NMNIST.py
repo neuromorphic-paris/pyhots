@@ -52,11 +52,13 @@ class NMNIST(Dataset):
                                ' You can use download=True to download it')
 
         for path, dirs, files in os.walk('./data/Test'):
+            dirs.sort()
             for file in files:
                 if file.endswith('bin'):
                     events = self._read_nmnist_file(path + '/' + file)
                     self.data.append(events)
-                    self.targets.append(path[-1])
+                    label_number = int(path[-1])
+                    self.targets.append(label_number)
 
     def __getitem__(self, index):
         """
@@ -65,7 +67,7 @@ class NMNIST(Dataset):
         Returns:
             tuple: (events, target) where target is index of the target class.
         """
-        events, target = self.data[index], int(self.targets[index])
+        events, target = self.data[index], self.targets[index]
 
         if self.transform is not None:
             events = self.transform(events)
