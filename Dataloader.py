@@ -17,11 +17,11 @@ class Dataloader():
             np.random.shuffle(self.indices)
 
     def __iter__(self):
-        return iter(range(len(self.dataset)))
+        return self
 
     def __next__(self):
         self.iteration = self.iteration + 1
-        return self.dataset(self.indices[self.iteration])
+        return self.dataset[self.indices[self.iteration]]
 
     def __len__(self):
         return len(self.dataset)
