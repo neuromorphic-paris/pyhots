@@ -28,6 +28,8 @@ def blink_loader(directory):
                     for line in lines:
                         t, xlt, ylt, xlb, ylb, xrt, yrt, xrb, yrb = [int(v) for v in line.split()]
 
+                        t = t * 1000
+
                         ts = events['t']
                         xs = events['x']
                         ys = events['y']

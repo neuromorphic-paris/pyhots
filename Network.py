@@ -19,8 +19,8 @@ class Network():
                                   time_constants_per_layer[l]))
         self.number_of_layers = len(self.layers)
 
-    def learn(self, recordings):
+    def forward(self, recording):
         # initialise polarities for each layer for each event
-        for event in recordings:
+        for event in recording:
             for layer in self.layers:
                 layer.process(event)
