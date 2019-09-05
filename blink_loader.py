@@ -16,6 +16,7 @@ def blink_loader(directory):
     print(directory)
     blinks = []
     for path, dirs, files in os.walk(directory):
+        dirs.sort()
         for file in files:
             if file.startswith('blink-labels'):
                 recording_number = path[-1]

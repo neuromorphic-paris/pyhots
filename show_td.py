@@ -31,27 +31,29 @@ def show_td(events, start_time=0, frame_length=24e3, wait_delay=1):
     return
 
 def show_td_surface(events, start_time=0, frame_length=24e3, decay_constant=1e5, wait_delay=1):
+    cv2.destroyAllWindows()
     timestamps = events[:,2]
     frame_start = timestamps[0]
     frame_end = frame_start + frame_length
     width = max(events[:,0])
     heigth = max(events[:,1])
-    polarities = 2
-    ts_img = np.zeros((polarities, heigth+1, width+1))
+    print('width: ' + str(width) + ', heigth: ' + str(heigth))
+    polarities = 1
+    ts_img = np.zeros((polarities, width+1, heigth+1))
     scale = 10
-    resize_dims = (heigth*scale, width*scale)
+    resize_dims = (width*scale, heigth*scale)
     for event in events:
         timestamp = event[2]
-        ts_img[event[3], event[1], event[0]] = timestamp
+        ts_img[0, event[0], heigth - event[1]] = timestamp
 
         if timestamp > frame_end:
             mask = np.where(ts_img != 0)
             surface = ts_img.copy()
             surface[mask] = (surface[mask] - timestamp)
             surface[mask] = np.exp(surface[mask] / decay_constant)
+            surface = surface * 255
             #import ipdb; ipdb.set_trace()
-            surface = surface * 200
-            resize = cv2.resize(surface, resize_dims, interpolation = cv2.INTER_AREA)
+            resize = cv2.resize(surface[0,:,:], resize_dims, interpolation = cv2.INTER_AREA)
             cv2.imshow('surface', resize)
             cv2.waitKey(wait_delay)
             frame_end = frame_end + frame_length
