@@ -15,20 +15,31 @@ blinks = blink_loader(data_set_base_path + data_set)
 
 # %% generate time surfaces
 import numpy as np
+
+blinks_transformed = []
+for blink in blinks:
+    b = blink.view(type=np.recarray) #, dtype=[('t', '<i8'), ('x', '<u2'), ('y', '<u2'), ('is_threshold_crossing', '?'), ('polarity', '?')])
+    events = np.zeros((len(b), 4))
+    events[:,0] = b.x.astype(int) - min(b.x)
+    events[:,1] = b.y.astype(int) - min(b.y)
+    events[:,2] = b.t.astype(int)
+    events[:,3] = b.polarity.astype(int)
+    events = events.astype(int)
+    blinks_transformed.append(events)
+
+blinks = blinks_transformed
+del(blinks_transformed)
+
+from show_td import show_td_surface
+show_td_surface(blinks[0], frame_length=5000, decay_constant=5000, wait_delay=50)
+# %%
 import sparse
 import matplotlib.pyplot as plt
 import seaborn as sns
+from mpl_toolkits.mplot3d import Axes3D
 
 time_constant = 2e5
-
-b = blinks[0].view(type=np.recarray, dtype=[('t', '<i8'), ('x', '<u2'), ('y', '<u2'), ('is_threshold_crossing', '?'), ('polarity', '?')])
-events = np.zeros((len(b), 4))
-events[:,0] = b.x.astype(int) - min(b.x)
-events[:,1] = b.y.astype(int) - min(b.y)
-events[:,2] = b.t.astype(int)
-events[:,3] = b.polarity.astype(int)
-events = events.astype(int)
-
+events = blinks[0]
 # create sparse multidimensional matrix with t,x,y and t as data
 matrix = sparse.COO((events[:,2], (events[:,2], events[:,0], events[:,1])))
 # take max values along the time axis and convert to normal matrix
@@ -38,10 +49,6 @@ tsurface = np.exp((surface - b.t[-1]) / time_constant)
 plt.figure()
 sns.heatmap(tsurface)
 
-
-# %%
-from mpl_toolkits.mplot3d import Axes3D
-
 fig = plt.figure()
 ax = Axes3D(fig)
 
@@ -49,6 +56,10 @@ ax.scatter(events[:,0],events[:,1],events[:,2])
 plt.xlabel('X')
 plt.ylabel('Y')
 plt.show()
+
+# %%
+
+
 
 array = np.array([[[0],[1],[10]],
          [[1],[1],[11]],
