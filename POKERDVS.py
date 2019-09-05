@@ -2,7 +2,7 @@
 import os
 import os.path
 import loris
-from Dataset import Dataset
+from spike_data_augmentation import Dataset
 
 
 class POKERDVS(Dataset):
