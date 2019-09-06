@@ -1,21 +1,26 @@
 # -*- coding: utf-8 -*-
 import numpy as np
-import TimeSurface from TimeSurface
+from TimeSurface import TimeSurface
 
-class Layer():
+
+class Layer:
     def __init__(self, surface_dimensions, number_of_features, time_constant):
         self.surface_dimensions = surface_dimensions
         self.number_of_features = number_of_features
-        self.time_constant = time_constant
+        self.tau = time_constant
+        self.timestamp_memory = np.zeros((number_of_features, ))
         self.latest_timestamps = 0
+        self.radius = surface_dimensions / 2
 
     def process(self, event):
-        self.tsmem[event.p, event.x, event.y] = event.t
+        self.timestamp_memory[event.p, event.x, event.y] = event.t
 
-        tcontext = self.tsmem[:_nPol,_x-self.R:_x+self.R+1, _y-self.R:_y+self.R+1] - _t
-        tsdata = np.exp(tcontext/self.tau)
-        tsdata[tcontext < (-3*self.tau)] = 0
-        tsurf = TimeSurface(self.R, _nPol, tsdata)
+        timestamp_context = self.timestamp_memory[:event.p,
+                                                event.x-self.radius:event.x+self.radius,
+                                                event.y-self.radius:event.y+self.radius] - event.t
+        timestamp_data = np.exp(timestamp_context/self.tau)
+        timestamp_data[timestamp_context < (-3*self.tau)] = 0
+        timesurface = TimeSurface(self.radius, _nPol, tsdata)
 
         if self.do_smoothing:
             tsurf.smooth(self.smoothing_size)
