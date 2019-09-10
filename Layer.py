@@ -10,26 +10,33 @@ class Layer:
         self.tau = time_constant
         self.timestamp_memory = np.zeros((number_of_features, sensor_size[0], sensor_size[1]))
         self.latest_timestamps = 0
-        self.radius = np.divide(surface_dimensions[0]-1, 2)
+        self.radius = int(np.divide(surface_dimensions[0]-1, 2))
         self.bases = np.random.rand(number_of_features, surface_dimensions[0], surface_dimensions[1])
 
     def process(self, event):
         self.timestamp_memory[event.p, event.x, event.y] = event.t
-
         # create time surface
-        timestamp_context = self.timestamp_memory[:event.p,
-                                                event.x-self.radius:event.x+self.radius,
-                                                event.y-self.radius:event.y+self.radius] - event.t
+        timestamp_context = self.timestamp_memory[:self.number_of_features,
+                                                event.x-self.radius:event.x+self.radius+1,
+                                                event.y-self.radius:event.y+self.radius+1] - event.t
         timestamp_data = np.exp(timestamp_context/self.tau)
         timestamp_data[timestamp_context < (-3*self.tau)] = 0
         timesurface = timestamp_data
         #timesurface = TimeSurface(timestamp_data)
 
+        ipdb.set_trace()
+
         # TODO improve surface
 
         # correlate with bases of this layer
-        best_prototype_id, corr_score = self.correlate_with_bases(timesurface)
+        #best_prototype_id, corr_score = self._correlate_with_bases(timesurface)
 
         # if close to one basis, propagate to next layer
 
         # otherwise create new basis and stop
+
+        event.p = 3
+        return event
+
+    def _correlate_with_bases(self, timesurface):
+        pass
