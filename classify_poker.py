@@ -8,15 +8,18 @@ testloader = Dataloader(testset, shuffle=False)
 # %%
 from Network import Network
 
-surface_dimensions = [(5,5)]
-number_of_features = [10]
+surface_dimensions = [(5, 5)]
+number_of_features = [8]
 time_constants = [1e5]
+sensor_size = (34, 34)
 
 #for events, label in iter(testloader):
 #    print(label)
 
 net = Network(surface_dimensions_per_layer=surface_dimensions,
               number_of_features_per_layer=number_of_features,
-              time_constants_per_layer=time_constants)
+              time_constants_per_layer=time_constants,
+              sensor_size=sensor_size)
 
-
+events, label = next(iter(testloader))
+net(events)

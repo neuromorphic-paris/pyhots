@@ -1,24 +1,15 @@
 import numpy as np
 
+
 class TimeSurface:
-    def __init__(self, _R, _nPol, _data):
-        self.R = _R     # half width
-        self.P = _nPol  # number of pol
-        if _data.shape == (self.P, 2 * self.R + 1, 2 * self.R + 1):
-            self.data = _data
-        else:
-            print('TS Error: Wrong shape!')
+    def __init__(self, times):
+        assert times.shape == (self.polarity, 2 * self.radius + 1, 2 * self.radius + 1)
+        self.times = times
 
-        self.events_per_pol = np.zeros((self.P), dtype = float)
-        for p in np.arange(self.P):
-            self.events_per_pol[p] = np.sum(self.data[p,:,:] > 0)
-        maxevents = (2 * self.R + 1) ** 2
-        self.maxpower = np.max(self.events_per_pol / maxevents)
-        self.total_ev = np.sum(self.events_per_pol)
-        self.most_ev_per_pol = np.max(self.events_per_pol).astype(int)
-        self.smoothed = False
+    def normalize(self):
+        self.data = self.data / np.sum(self.data)
 
-    def correlate_with(self, _TS, _type = 'simple'):
+    def correlate_with(self, timesurface):
         if _TS.P > self.P:
             Pmax = _TS.P
             diff = _TS.P - self.P
@@ -54,14 +45,5 @@ class TimeSurface:
         corr = np.dot(corr_per_pol, density_per_pol)
         return corr
 
-    def normalize(self):
-        self.data = self.data / np.sum(self.data)
 
-    def smooth(self, _size):
-        if not self.smoothed:
-            weights = np.full(_size, 1.0/(_size[0]*_size[1]))
-            for p in np.arange(self.P):
-                self.data[p,:,:] = convolve_scipy(self.data[p,:,:], weights)
-            self.smoothed = True
-        else:
-            print('TS Error: TS already smoothed.')
+

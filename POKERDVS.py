@@ -15,6 +15,7 @@ class POKERDVS(Dataset):
                 if file.endswith('dat'):
                     event_file = loris.read_file(path + '/' + file)
                     events = event_file['events']
+                    events['y'] = 239 - events['y']
                     self.data.append(events)
                     self.targets.append(file[:2])
 
