@@ -7,11 +7,11 @@ transform = transforms.Compose([transforms.TimeJitter(variance=3000),
 
 testset = spike_data_augmentation.datasets.NMNIST(save_to='./data',
                                                   train=False,
-                                                  download=True,
+                                                  download=False,
                                                   transform=transform)
 
 # %%
-testloader = spike_data_augmentation.datasets.Dataloader(testset, shuffle=True)
+testloader = spike_data_augmentation.datasets.Dataloader(testset, shuffle=False)
 
 # %%
 import numpy as np
@@ -20,8 +20,14 @@ number_of_features = [10]
 
 test = iter(testloader)
 
-for events, label in iter(testloader):
-    print(label)
+print(len(testloader))
+
+events, label = next(test)
+print(events)
+
+#for events, label in iter(testloader):
+#    pass
+    #print(label)
 
 # %%
 

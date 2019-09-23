@@ -32,19 +32,22 @@ def show_td(events, start_time=0, frame_length=24e3, wait_delay=1):
 
 def show_td_surface(events, start_time=0, frame_length=24e3, decay_constant=1e5, wait_delay=1):
     cv2.destroyAllWindows()
-    timestamps = events[:,2]
+    t_index = 0
+    x_index = 1
+    y_index = 2
+    timestamps = events[:,t_index]
     frame_start = timestamps[0]
     frame_end = frame_start + frame_length
-    width = max(events[:,0])
-    heigth = max(events[:,1])
+    width = int(max(events[:,x_index]))
+    heigth = int(max(events[:,y_index]))
     print('width: ' + str(width) + ', heigth: ' + str(heigth))
     polarities = 1
     ts_img = np.zeros((polarities, width+1, heigth+1))
-    scale = 10
+    scale = 2
     resize_dims = (width*scale, heigth*scale)
     for event in events:
-        timestamp = event[2]
-        ts_img[0, event[0], heigth - event[1]] = timestamp
+        timestamp = event[t_index]
+        ts_img[0, int(event[x_index]), int(heigth - event[y_index])] = timestamp
 
         if timestamp > frame_end:
             mask = np.where(ts_img != 0)
