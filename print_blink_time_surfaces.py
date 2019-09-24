@@ -15,23 +15,21 @@ blinks = blink_loader(data_set_base_path + data_set)
 
 # %% generate time surfaces
 import numpy as np
+from numpy.lib import recfunctions as rfn
 
 blinks_transformed = []
 for blink in blinks:
-    b = blink.view(type=np.recarray) #, dtype=[('t', '<i8'), ('x', '<u2'), ('y', '<u2'), ('is_threshold_crossing', '?'), ('polarity', '?')])
-    events = np.zeros((len(b), 4))
-    events[:,0] = b.x.astype(int) - min(b.x)
-    events[:,1] = b.y.astype(int) - min(b.y)
-    events[:,2] = b.t.astype(int)
-    events[:,3] = b.polarity.astype(int)
-    events = events.astype(int)
-    blinks_transformed.append(events)
+    blink.x -= min(blink.x)
+    blink.y -= min(blink.y)
+    new_events = rfn.structured_to_unstructured(blink)
+    new_events = np.delete(new_events, 3, 1)
+    blinks_transformed.append(new_events)
 
-blinks = blinks_transformed
-del(blinks_transformed)
+#blinks = blinks_transformed
+#del(blinks_transformed)
 
 from show_td import show_td_surface
-show_td_surface(blinks[0], frame_length=5000, decay_constant=5000, wait_delay=50)
+show_td_surface(blinks_transformed[0], frame_length=5000, decay_constant=5000, wait_delay=200, scale=10)
 # %%
 import sparse
 import matplotlib.pyplot as plt
