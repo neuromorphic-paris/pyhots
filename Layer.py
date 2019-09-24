@@ -22,11 +22,8 @@ class Layer:
         # create time surface
         timestamp_context = self.timestamp_memory[:,event.x-self.radius:event.x+self.radius+1,
                                                     event.y-self.radius:event.y+self.radius+1] - event.t
-        timestamp_data = np.exp(timestamp_context/self.tau)
-        timestamp_data[timestamp_context < (-3*self.tau)] = 0
-        timesurface = timestamp_data
+        timesurface = TimeSurface(self, timestamp_context)
         # TODO improve surface
-        #timesurface = TimeSurface(timestamp_data)
 
         # correlate with bases of this layer
         best_prototype_id, corr_score = self._correlate_with_bases(timesurface)
@@ -39,12 +36,18 @@ class Layer:
             return None
 
     def _correlate_with_bases(self, timesurface):
-        ipdb.set_trace()
+        corr_per_pol = np.zeros((self.number_of_features))
+        for index, basis in enumerate(self.bases):
+            ipdb.set_trace()
+            corr_per_pol[index] = self._corr2(basis, timesurface.data)
+
+        if timesurface > self.network.minimum_events:
+            pass
         if self.network.learning_enabled:
             # update prototype
-        pass
+            pass
 
-    def _corr2(a,b):
+    def _corr2(self, a, b):
         a = a - np.mean(a)
         b = b - np.mean(b)
         d = np.sqrt((a*a).sum() * (b*b).sum())

@@ -10,9 +10,10 @@ testloader = Dataloader(testset, shuffle=False)
 # %%
 
 surface_dimensions = [(5, 5)]
-number_of_features = [4]
+number_of_features = [2]
 time_constants = [1e5]
 sensor_size = (34, 34)
+minimum_events = [5]
 
 #for events, label in iter(testloader):
 #    print(label)

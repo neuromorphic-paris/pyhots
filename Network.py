@@ -21,6 +21,7 @@ class Network():
 
         self.layers = []
         self.learning_enabled = learning_enabled
+        self.minimum_events = 5
         for l, surface_dimension in enumerate(surface_dimensions_per_layer):
             self.layers.append(Layer(self, surface_dimension,
                                      number_of_features_per_layer[l],
