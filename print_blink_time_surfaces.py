@@ -16,6 +16,7 @@ blinks = blink_loader(data_set_base_path + data_set)
 # %% generate time surfaces
 import numpy as np
 from numpy.lib import recfunctions as rfn
+from show_td import show_td_surface
 
 blinks_transformed = []
 for blink in blinks:
@@ -25,10 +26,6 @@ for blink in blinks:
     new_events = np.delete(new_events, 3, 1)
     blinks_transformed.append(new_events)
 
-#blinks = blinks_transformed
-#del(blinks_transformed)
-
-from show_td import show_td_surface
 show_td_surface(blinks_transformed[0], frame_length=5000, decay_constant=5000, wait_delay=200, scale=10)
 # %%
 import sparse

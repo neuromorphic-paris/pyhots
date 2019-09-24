@@ -13,15 +13,16 @@ import ipdb
 class Network():
     def __init__(self, surface_dimensions_per_layer,
                  number_of_features_per_layer, time_constants_per_layer,
-                 sensor_size):
+                 sensor_size, learning_enabled=True):
         assert len(surface_dimensions_per_layer)\
                 == len(number_of_features_per_layer)\
                 == len(time_constants_per_layer)
         assert len(sensor_size) == 2
 
         self.layers = []
-        for l in range(0, len(number_of_features_per_layer)):
-            self.layers.append(Layer(surface_dimensions_per_layer[l],
+        self.learning_enabled = learning_enabled
+        for l, surface_dimension in enumerate(surface_dimensions_per_layer):
+            self.layers.append(Layer(self, surface_dimension,
                                      number_of_features_per_layer[l],
                                      time_constants_per_layer[l],
                                      sensor_size))

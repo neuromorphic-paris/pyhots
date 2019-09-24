@@ -1,12 +1,13 @@
 from POKERDVS import POKERDVS
-testset = POKERDVS(save_to='./data', train=False, download=False)
+from spike_data_augmentation.datasets.dataloader import Dataloader
+from Network import Network
+
+testset = POKERDVS(save_to='./data')
 
 # %%
-from Dataloader import Dataloader
 testloader = Dataloader(testset, shuffle=False)
 
 # %%
-from Network import Network
 
 surface_dimensions = [(5, 5)]
 number_of_features = [4]

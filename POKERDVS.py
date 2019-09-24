@@ -6,7 +6,7 @@ from spike_data_augmentation.datasets.dataset import Dataset
 
 
 class POKERDVS(Dataset):
-    def __init__(self, save_to, train=True, transform=None, download=False):
+    def __init__(self, save_to, transform=None):
         super(POKERDVS, self).__init__(save_to, transform=transform)
 
         for path, dirs, files in os.walk('/home/gregorlenz/Development/Github/HOTS-DOJO/Datasets/Cards/usable/pips'):
