@@ -12,8 +12,11 @@ import ipdb
 
 class Network():
     def __init__(self, surface_dimensions_per_layer,
-                 number_of_features_per_layer, time_constants_per_layer,
-                 sensor_size, learning_enabled=True):
+                 number_of_features_per_layer,
+                 time_constants_per_layer,
+                 learning_rates_per_layer,
+                 sensor_size,
+                 learning_enabled=True):
         assert len(surface_dimensions_per_layer)\
                 == len(number_of_features_per_layer)\
                 == len(time_constants_per_layer)
@@ -22,11 +25,14 @@ class Network():
         self.layers = []
         self.learning_enabled = learning_enabled
         self.minimum_events = 5
+        polarities = 2  # On and Off events in the first layer
         for l, surface_dimension in enumerate(surface_dimensions_per_layer):
-            self.layers.append(Layer(self, surface_dimension,
+            self.layers.append(Layer(self, surface_dimension, polarities,
                                      number_of_features_per_layer[l],
                                      time_constants_per_layer[l],
+                                     learning_rates_per_layer[l],
                                      sensor_size))
+            polarities = number_of_features_per_layer[l]
         self.number_of_layers = len(self.layers)
 
     def __call__(self, recording):

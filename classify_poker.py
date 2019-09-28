@@ -10,8 +10,9 @@ testloader = Dataloader(testset, shuffle=False)
 # %%
 
 surface_dimensions = [(5, 5)]
-number_of_features = [2]
+number_of_features = [16]
 time_constants = [1e5]
+learning_rates = [0.075, 0.0012]
 sensor_size = (34, 34)
 minimum_events = [5]
 
@@ -21,6 +22,7 @@ minimum_events = [5]
 net = Network(surface_dimensions_per_layer=surface_dimensions,
               number_of_features_per_layer=number_of_features,
               time_constants_per_layer=time_constants,
+              learning_rates=learning_rates,
               sensor_size=sensor_size)
 
 testiterator = iter(testloader)
