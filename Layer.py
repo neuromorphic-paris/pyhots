@@ -2,6 +2,7 @@ import numpy as np
 from TimeSurface import TimeSurface
 import ipdb
 
+
 class Layer:
     def __init__(self, network, surface_dimensions, polarities,
                  number_of_features, time_constant, learning_rate, sensor_size):
@@ -12,6 +13,7 @@ class Layer:
         self.tau = time_constant
         self.learning_rate = learning_rate
         self.timestamp_memory = np.zeros((polarities, sensor_size[0], sensor_size[1]))
+        self.timestamp_memory -= self.tau * 3 + 1
         self.latest_timestamps = 0
         self.radius = int(np.divide(surface_dimensions[0]-1, 2))
         self.bases = []
@@ -40,17 +42,18 @@ class Layer:
             return None
 
     def _correlate_with_bases(self, timesurface, method='euclidian'):
-        if timesurface.number_of_events > self.network.minimum_events:
-            best_index = -1
-            best_corr = 0
-            for index, basis in enumerate(self.bases):
-                if method == 'euclidian':
-                    corr = np.sqrt(np.sum((basis - timesurface.data)**2))
-                if corr > best_corr:
-                    best_index = index
-                    best_corr = corr
+        #if timesurface.number_of_events > self.network.minimum_events:
+        best_index = -1
+        best_corr = 0
+        for index, basis in enumerate(self.bases):
+            if method == 'euclidian':
+                corr = np.sqrt(np.sum((basis - timesurface.data)**2))
+            if corr > best_corr:
+                best_index = index
+                best_corr = corr
 
         if self.network.learning_enabled:
-            self.bases[best_index] += self.learning_rate * best_corr * (timesurface.data - self.bases[best_index])
+            self.bases[best_index] += (self.learning_rate * best_corr
+                                      * (timesurface.data - self.bases[best_index]))
 
         return best_index, best_corr

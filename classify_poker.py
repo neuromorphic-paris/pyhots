@@ -22,7 +22,7 @@ minimum_events = [5]
 net = Network(surface_dimensions_per_layer=surface_dimensions,
               number_of_features_per_layer=number_of_features,
               time_constants_per_layer=time_constants,
-              learning_rates=learning_rates,
+              learning_rates_per_layer=learning_rates,
               sensor_size=sensor_size)
 
 testiterator = iter(testloader)
