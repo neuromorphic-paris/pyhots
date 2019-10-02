@@ -27,7 +27,7 @@ class Network():
         self.minimum_events = 5
         polarities = 2  # On and Off events in the first layer
         for l, surface_dimension in enumerate(surface_dimensions_per_layer):
-            self.layers.append(Layer(self, surface_dimension, polarities,
+            self.layers.append(Layer(self, l, surface_dimension, polarities,
                                      number_of_features_per_layer[l],
                                      time_constants_per_layer[l],
                                      learning_rates_per_layer[l],

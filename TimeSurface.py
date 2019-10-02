@@ -6,8 +6,9 @@ class TimeSurface:
     def __init__(self, layer, timestamp_context):
         timestamp_data = np.exp(timestamp_context/layer.tau)
         timestamp_data[timestamp_context < (-3*layer.tau)] = 0
-        assert timestamp_context.shape == (layer.polarities, 2 * layer.radius
-                                           + 1, 2 * layer.radius + 1)
+        if timestamp_context.shape != (layer.polarities, 2 * layer.radius
+                                       + 1, 2 * layer.radius + 1):
+            ipdb.set_trace()
         self.data = timestamp_data
 
     def normalize(self):
