@@ -36,7 +36,8 @@ class Network():
                                      sensor_size))
             polarities = number_of_features_per_layer[l]
         self.number_of_layers = len(self.layers)
-        self.fig, self.ax = self._prepare_plotting(number_of_features_per_layer[0])
+        self.fig, self.axisImages = self._prepare_plotting(number_of_features_per_layer[0])
+        self.processed_recordings = 0
 
     def __call__(self, recording):
         # cast to rec array so reading code becomes easier since I can use
@@ -50,12 +51,17 @@ class Network():
         for event in recording:
             for index, layer in enumerate(self.layers):
                 event = layer.process(event)
-                if index == 0:
-                    feature_number = event.p
-                    #ipdb.set_trace()
-                    self.ax[feature_number].set_data(layer.bases[feature_number][0])
-                    self.fig.suptitle(str(layer.processed_events) + ' processed events in layer ' + str(index))
-                    plt.pause(0.0001)
+                #if index == 0:
+                #feature_number = event.p
+                #self.ax[feature_number].set_data(layer.bases[feature_number][0])
+                #self.fig.suptitle(str(layer.processed_events) + ' processed events in layer ' + str(index))
+
+        self.processed_recordings += 1
+
+        for index, axisImage in enumerate(self.axisImages):
+            axisImage.set_data(self.layers[0].bases[index][0])
+        self.fig.suptitle(str(self.processed_recordings) + ' processed recordings')
+        plt.pause(0.01)
 
     def _prepare_plotting(self, number_of_features):
         plt.close()
@@ -65,6 +71,8 @@ class Network():
         fig.suptitle('first layer bases')
         ax = []
         for index, axis in enumerate(axes):
-            ax.append(axis.imshow(self.layers[0].bases[index][0], vmin = 0, vmax = 1, cmap = plt.cm.hot, interpolation = 'none', origin = 'upper'))
+            #vmin = 0, vmax = 1,
+            ax.append(axis.imshow(self.layers[0].bases[index][0], cmap = plt.cm.hot, interpolation = 'none', origin = 'upper'))
+            axis.axis('off')
         plt.pause(0.0001)
         return fig, ax

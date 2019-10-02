@@ -39,10 +39,9 @@ class Layer:
         # correlate with bases of this layer
         best_prototype_id, corr_score = self._correlate_with_bases(timesurface)
 
-        # plot that sh
-
-
         # if close to one basis, propagate to next layer
+        if corr_score < 1:
+            print(corr_score)
         if corr_score > self.min_corr_score:
             event.p = best_prototype_id
             return event
