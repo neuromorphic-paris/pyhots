@@ -36,6 +36,7 @@ class Network():
                                      sensor_size))
             polarities = number_of_features_per_layer[l]
         self.number_of_layers = len(self.layers)
+        self.sensor_size = sensor_size
         self.fig, self.axisImages = self._prepare_plotting(number_of_features_per_layer[0])
         self.processed_recordings = 0
 
@@ -48,6 +49,8 @@ class Network():
         recording = recording.view(type=np.recarray,
                                    dtype=[('t', '<u8'), ('x', '<u2'),
                                           ('y', '<u2'), ('p', np.int8)])
+        assert max(recording.x) <= self.sensor_size[0]
+        assert max(recording.y) <= self.sensor_size[1]
         for event in recording:
             for index, layer in enumerate(self.layers):
                 event = layer.process(event)
