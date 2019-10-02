@@ -23,7 +23,7 @@ class Layer:
         for f in range(number_of_features):
             self.bases.append(np.random.rand(self.polarities, surface_dimensions[0], surface_dimensions[1]))
         self.processed_events = 0
-        self.min_corr_score = 0
+        self.min_corr_score = 0.1
 
     def process(self, event):
         if event == None:
@@ -40,7 +40,7 @@ class Layer:
         best_prototype_id, corr_score = self._correlate_with_bases(timesurface)
 
         # if close to one basis, propagate to next layer
-        if corr_score < 1:
+        if corr_score < 0:
             print(corr_score)
         if corr_score > self.min_corr_score:
             event.p = best_prototype_id
@@ -49,18 +49,20 @@ class Layer:
             return None
 
     def _correlate_with_bases(self, timesurface, method='euclidian'):
-        #if timesurface.number_of_events > self.network.minimum_events:
-        best_index = -1
-        best_corr = 0
+        corrs = []
         for index, basis in enumerate(self.bases):
             if method == 'euclidian':
-                corr = np.sqrt(np.sum((basis - timesurface.data)**2))
-            if corr > best_corr:
-                best_index = index
-                best_corr = corr
+                corrs.append(self._correlation(basis, timesurface.data))
+        best_index = np.argmax(corrs)
+        best_corr = corrs[best_index]
 
-        if self.network.learning_enabled:
+        if self.network.learning_enabled and best_index != -1 and best_corr > self.min_corr_score:
             self.bases[best_index] += (self.learning_rate * best_corr
                                       * (timesurface.data - self.bases[best_index]))
 
         return best_index, best_corr
+
+    def _correlation(self, a, b):
+        a -= np.mean(a)
+        b -= np.mean(b)
+        return (a*b).sum() / (np.sqrt((a*a).sum() * (b*b).sum()))
