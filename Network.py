@@ -7,6 +7,8 @@ Created on Sat Jun 29 23:00:14 2019
 """
 from Layer import Layer
 import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
 import ipdb
 
 
@@ -34,6 +36,7 @@ class Network():
                                      sensor_size))
             polarities = number_of_features_per_layer[l]
         self.number_of_layers = len(self.layers)
+        self.fig, self.ax = self._prepare_plotting(number_of_features_per_layer[0])
 
     def __call__(self, recording):
         # cast to rec array so reading code becomes easier since I can use
@@ -45,5 +48,23 @@ class Network():
                                    dtype=[('t', '<u8'), ('x', '<u2'),
                                           ('y', '<u2'), ('p', np.int8)])
         for event in recording:
-            for layer in self.layers:
+            for index, layer in enumerate(self.layers):
                 event = layer.process(event)
+                if index == 0:
+                    feature_number = event.p
+                    #ipdb.set_trace()
+                    self.ax[feature_number].set_data(layer.bases[feature_number][0])
+                    self.fig.suptitle(str(layer.processed_events) + ' processed events in layer ' + str(index))
+                    plt.pause(0.0001)
+
+    def _prepare_plotting(self, number_of_features):
+        plt.close()
+        side_length = int(np.sqrt(number_of_features))
+        fig, axes = plt.subplots(side_length,side_length)
+        axes = np.reshape(axes, -1)
+        fig.suptitle('first layer bases')
+        ax = []
+        for index, axis in enumerate(axes):
+            ax.append(axis.imshow(self.layers[0].bases[index][0], vmin = 0, vmax = 1, cmap = plt.cm.hot, interpolation = 'none', origin = 'upper'))
+        plt.pause(0.0001)
+        return fig, ax

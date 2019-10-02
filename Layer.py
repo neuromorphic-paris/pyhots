@@ -14,23 +14,23 @@ class Layer:
         self.tau = time_constant
         self.learning_rate = learning_rate
         self.radius = int(np.divide(surface_dimensions[0]-1, 2))
+        # create memory with padding
         self.timestamp_memory = np.zeros((polarities,
                                           sensor_size[0] + self.radius*2,
                                           sensor_size[1] + self.radius*2))
         self.timestamp_memory -= self.tau * 3 + 1
-        self.latest_timestamps = 0
         self.bases = []
         for f in range(number_of_features):
             self.bases.append(np.random.rand(self.polarities, surface_dimensions[0], surface_dimensions[1]))
         self.processed_events = 0
-        self.min_corr_score = 0.7
+        self.min_corr_score = 0
 
     def process(self, event):
         if event == None:
             return None
         self.processed_events += 1
+        # account for padding
         self.timestamp_memory[event.p, event.x+self.radius, event.y+self.radius] = event.t
-        # create time surface
         timestamp_window = self.timestamp_memory[:,event.x:event.x+self.surface_dimensions[0],
                                                    event.y:event.y+self.surface_dimensions[1]] - event.t
         timesurface = TimeSurface(self, timestamp_window)
@@ -38,6 +38,9 @@ class Layer:
 
         # correlate with bases of this layer
         best_prototype_id, corr_score = self._correlate_with_bases(timesurface)
+
+        # plot that sh
+
 
         # if close to one basis, propagate to next layer
         if corr_score > self.min_corr_score:
