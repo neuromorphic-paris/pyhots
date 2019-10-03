@@ -8,7 +8,6 @@ Created on Sat Jun 29 23:00:14 2019
 from Layer import Layer
 import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sns
 import ipdb
 
 
@@ -18,7 +17,8 @@ class Network():
                  time_constants_per_layer,
                  learning_rates_per_layer,
                  sensor_size,
-                 learning_enabled=True):
+                 learning_enabled=True,
+                 plot_evolution=True):
         assert len(surface_dimensions_per_layer)\
                 == len(number_of_features_per_layer)\
                 == len(time_constants_per_layer)
@@ -26,6 +26,7 @@ class Network():
 
         self.layers = []
         self.learning_enabled = learning_enabled
+        self.plot_evolution = plot_evolution
         self.minimum_events = 5
         polarities = 2  # On and Off events in the first layer
         for l, surface_dimension in enumerate(surface_dimensions_per_layer):
@@ -37,7 +38,8 @@ class Network():
             polarities = number_of_features_per_layer[l]
         self.number_of_layers = len(self.layers)
         self.sensor_size = sensor_size
-        self.fig, self.axisImages = self._prepare_plotting(number_of_features_per_layer[0])
+        if self.plot_evolution:
+            self.fig, self.axisImages = self._prepare_plotting(number_of_features_per_layer[0])
         self.processed_recordings = 0
 
     def __call__(self, recording):
@@ -49,8 +51,8 @@ class Network():
         recording = recording.view(type=np.recarray,
                                    dtype=[('t', '<u8'), ('x', '<u2'),
                                           ('y', '<u2'), ('p', np.int8)])
-        assert max(recording.x) <= self.sensor_size[0]
-        assert max(recording.y) <= self.sensor_size[1]
+        assert max(recording.x) < self.sensor_size[0]
+        assert max(recording.y) < self.sensor_size[1]
         for event in recording:
             for index, layer in enumerate(self.layers):
                 event = layer.process(event)
@@ -61,10 +63,11 @@ class Network():
 
         self.processed_recordings += 1
 
-        for index, axisImage in enumerate(self.axisImages):
-            axisImage.set_data(self.layers[0].bases[index][0])
-        self.fig.suptitle(str(self.processed_recordings) + ' processed recordings')
-        plt.pause(0.01)
+        if self.plot_evolution:
+            for index, axisImage in enumerate(self.axisImages):
+                axisImage.set_data(self.layers[0].bases[index][0])
+            self.fig.suptitle(str(self.processed_recordings) + ' processed recordings')
+            plt.pause(0.01)
 
     def _prepare_plotting(self, number_of_features):
         plt.close()

@@ -29,6 +29,7 @@ class Layer:
         if event == None:
             return None
         self.processed_events += 1
+
         # account for padding
         self.timestamp_memory[event.p, event.x+self.radius, event.y+self.radius] = event.t
         timestamp_window = self.timestamp_memory[:,event.x:event.x+self.surface_dimensions[0],
