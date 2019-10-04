@@ -81,7 +81,6 @@ class Network():
         fig.suptitle('first layer bases')
         ax = []
         for index, axis in enumerate(axes):
-            #vmin = 0, vmax = 1,
             ax.append(axis.imshow(self.layers[0].bases[index][0], cmap = plt.cm.hot, interpolation = 'none', origin = 'upper'))
             axis.axis('off')
         plt.pause(0.0001)

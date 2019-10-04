@@ -5,7 +5,7 @@ from Network import Network
 testset = POKERDVS(save_to='./data')
 
 # %%
-testloader = Dataloader(testset, shuffle=False)
+testloader = Dataloader(testset, shuffle=True)
 
 # %%
 surface_dimensions = [(5, 5)]

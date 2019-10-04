@@ -16,7 +16,7 @@ import sparse
 testset = POKERDVS(save_to='./data')
 
 # %%
-testloader = Dataloader(testset, shuffle=False)
+testloader = Dataloader(testset, shuffle=True)
 
 # %%
 surface_dimensions = [5, 5]
@@ -26,9 +26,9 @@ time_constants = [1e4]
 learning_rates = [0.075, 0.0012]
 sensor_size = (35, 35)
 polarities = 2
-
+number_of_events = testset.total_number_of_events()
 # pre-allocate time surface space
-all_surfaces = np.zeros((testset.total_number_of_events(), 2, surface_dimensions[0], surface_dimensions[1]))
+all_surfaces = np.zeros((number_of_events, 2, surface_dimensions[0], surface_dimensions[1]))
 
 # build surfaces for each recording
 
@@ -44,10 +44,12 @@ for recording, label in iter(testloader):
                                                        event.y:event.y+surface_dimensions[1]] - event.t
             timestamp_data = np.exp(timestamp_window/time_constants[0])
             timestamp_data[timestamp_window < (-3*time_constants[0])] = 0
-
+            all_surfaces[i,:,:,:] = timestamp_data
             if i > 89850:
-                ipdb.set_trace()
+                #ipdb.set_trace()
+                pass
             i += 1
+all_surfaces = all_surfaces[:i, :, :, :]
 # compute k clusters using normalised dot product
 
 
