@@ -21,8 +21,8 @@ net = Network(surface_dimensions_per_layer=surface_dimensions,
               time_constants_per_layer=time_constants,
               learning_rates_per_layer=learning_rates,
               sensor_size=sensor_size,
-              plot_evolution=False,
-              total_number_of_events=total_number_of_events)
+              plot_evolution=True,
+              total_number_of_events=None)
 
 testiterator = iter(testloader)
 

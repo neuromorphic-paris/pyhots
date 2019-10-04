@@ -14,11 +14,7 @@ class Layer:
         self.tau = time_constant
         self.learning_rate = learning_rate
         self.radius = int(np.divide(surface_dimensions[0]-1, 2))
-        # create memory with padding
-        self.timestamp_memory = np.zeros((polarities,
-                                          sensor_size[0] + self.radius*2,
-                                          sensor_size[1] + self.radius*2))
-        self.timestamp_memory -= self.tau * 3 + 1
+
         if network.total_number_of_events != None:
             self.all_timesurfaces = np.zeros((network.total_number_of_events, polarities, surface_dimensions[0], surface_dimensions[1]))
             self.all_best_ids = np.zeros((network.total_number_of_events))
@@ -39,13 +35,16 @@ class Layer:
         timestamp_window = self.timestamp_memory[:,event.x:event.x+self.surface_dimensions[0],
                                                    event.y:event.y+self.surface_dimensions[1]] - event.t
         timesurface = TimeSurface(self, timestamp_window)
-        if self.all_timesurfaces != []:
-            self.all_timesurfaces[self.processed_events,:,:,:] = timesurface.data
         # TODO improve surface
 
         # correlate with bases of this layer
         best_prototype_id, corr_score = self._correlate_with_bases(timesurface)
-        self.all_best_ids[self.processed_events] = best_prototype_id
+
+        if self.all_timesurfaces != []:
+            if self.processed_events == 89850:
+                ipdb.set_trace()
+            self.all_timesurfaces[self.processed_events,:,:,:] = timesurface.data
+            self.all_best_ids[self.processed_events] = best_prototype_id
 
         self.processed_events += 1
         # if close to one basis, propagate to next layer
@@ -56,6 +55,13 @@ class Layer:
             return event
         else:
             return None
+
+    def reset_memory(self):
+        # create memory with padding
+        self.timestamp_memory = np.zeros((self.polarities,
+                                          self.network.sensor_size[0] + self.radius*2,
+                                          self.network.sensor_size[1] + self.radius*2))
+        self.timestamp_memory -= self.tau * 3 + 1
 
     def _correlate_with_bases(self, timesurface, method='euclidian'):
         corrs = []

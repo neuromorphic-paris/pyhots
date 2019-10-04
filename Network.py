@@ -56,6 +56,7 @@ class Network():
         assert max(recording.x) < self.sensor_size[0]
         assert max(recording.y) < self.sensor_size[1]
         assert all(x <= y for x, y in zip(recording.t, recording.t[1:]))
+        [layer.reset_memory() for layer in self.layers]
         for event in recording:
             for index, layer in enumerate(self.layers):
                 event = layer.process(event)
