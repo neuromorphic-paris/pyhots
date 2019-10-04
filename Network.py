@@ -18,7 +18,8 @@ class Network():
                  learning_rates_per_layer,
                  sensor_size,
                  learning_enabled=True,
-                 plot_evolution=True):
+                 plot_evolution=True,
+                 total_number_of_events=None):
         assert len(surface_dimensions_per_layer)\
                 == len(number_of_features_per_layer)\
                 == len(time_constants_per_layer)
@@ -28,6 +29,7 @@ class Network():
         self.learning_enabled = learning_enabled
         self.plot_evolution = plot_evolution
         self.minimum_events = 5
+        self.total_number_of_events = total_number_of_events
         polarities = 2  # On and Off events in the first layer
         for l, surface_dimension in enumerate(surface_dimensions_per_layer):
             self.layers.append(Layer(self, l, surface_dimension, polarities,
@@ -53,6 +55,7 @@ class Network():
                                           ('y', '<u2'), ('p', np.int8)])
         assert max(recording.x) < self.sensor_size[0]
         assert max(recording.y) < self.sensor_size[1]
+        assert all(x <= y for x, y in zip(recording.t, recording.t[1:]))
         for event in recording:
             for index, layer in enumerate(self.layers):
                 event = layer.process(event)

@@ -19,6 +19,11 @@ class Layer:
                                           sensor_size[0] + self.radius*2,
                                           sensor_size[1] + self.radius*2))
         self.timestamp_memory -= self.tau * 3 + 1
+        if network.total_number_of_events != None:
+            self.all_timesurfaces = np.zeros((network.total_number_of_events, polarities, surface_dimensions[0], surface_dimensions[1]))
+            self.all_best_ids = np.zeros((network.total_number_of_events))
+        else:
+            self.all_timesurfaces = []
         self.bases = []
         for f in range(number_of_features):
             self.bases.append(np.random.rand(self.polarities, surface_dimensions[0], surface_dimensions[1]))
@@ -28,18 +33,21 @@ class Layer:
     def process(self, event):
         if event == None:
             return None
-        self.processed_events += 1
 
         # account for padding
         self.timestamp_memory[event.p, event.x+self.radius, event.y+self.radius] = event.t
         timestamp_window = self.timestamp_memory[:,event.x:event.x+self.surface_dimensions[0],
                                                    event.y:event.y+self.surface_dimensions[1]] - event.t
         timesurface = TimeSurface(self, timestamp_window)
+        if self.all_timesurfaces != []:
+            self.all_timesurfaces[self.processed_events,:,:,:] = timesurface.data
         # TODO improve surface
 
         # correlate with bases of this layer
         best_prototype_id, corr_score = self._correlate_with_bases(timesurface)
+        self.all_best_ids[self.processed_events] = best_prototype_id
 
+        self.processed_events += 1
         # if close to one basis, propagate to next layer
         if corr_score < 0:
             print(corr_score)
