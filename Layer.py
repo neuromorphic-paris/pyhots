@@ -41,8 +41,6 @@ class Layer:
         best_prototype_id, corr_score = self._correlate_with_bases(timesurface)
 
         if self.all_timesurfaces != []:
-            if self.processed_events == 89850:
-                ipdb.set_trace()
             self.all_timesurfaces[self.processed_events,:,:,:] = timesurface.data
             self.all_best_ids[self.processed_events] = best_prototype_id
 

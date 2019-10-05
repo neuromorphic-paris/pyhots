@@ -10,19 +10,21 @@ from POKERDVS import POKERDVS
 from spike_data_augmentation.datasets.dataloader import Dataloader
 from TimeSurface import TimeSurface
 import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
 import ipdb
 import sparse
 
 testset = POKERDVS(save_to='./data')
 
 # %%
-testloader = Dataloader(testset, shuffle=True)
+testloader = Dataloader(testset, shuffle=False)
 
 # %%
-surface_dimensions = [5, 5]
+surface_dimensions = [11, 11]
 radius = int(surface_dimensions[0]/2)
 number_of_features = [16]
-time_constants = [1e4]
+time_constants = [1e3]
 learning_rates = [0.075, 0.0012]
 sensor_size = (35, 35)
 polarities = 2
@@ -49,7 +51,22 @@ for recording, label in iter(testloader):
                 #ipdb.set_trace()
                 pass
             i += 1
+        break
 all_surfaces = all_surfaces[:i, :, :, :]
+# print things
+from mpl_toolkits.mplot3d import Axes3D
+plt.close()
+fig = plt.figure()
+#ax = fig.gca(projection='3d')
+
+surface = all_surfaces[-118][0]
+x = np.arange(0,surface_dimensions[0])
+y = x
+x,y = np.meshgrid(x, y)
+#surf = ax.plot_surface(x, y, surface, cmap=plt.cm.coolwarm,
+ #                      linewidth=0, antialiased=False)
+sns.heatmap(surface)
+
 # compute k clusters using normalised dot product
 
 

@@ -8,9 +8,9 @@ testset = POKERDVS(save_to='./data')
 testloader = Dataloader(testset, shuffle=True)
 
 # %%
-surface_dimensions = [(5, 5)]
+surface_dimensions = [(11, 11)]
 number_of_features = [16]
-time_constants = [1e4]
+time_constants = [1e3]
 learning_rates = [0.075, 0.0012]
 sensor_size = (35, 35)
 minimum_events = [5]
