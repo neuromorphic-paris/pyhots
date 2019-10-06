@@ -5,14 +5,13 @@ import ipdb
 
 class Layer:
     def __init__(self, network, index, surface_dimensions, polarities,
-                 number_of_features, time_constant, learning_rate, sensor_size):
+                 number_of_features, time_constant, sensor_size):
         self.network = network
         self.index = index
         self.surface_dimensions = surface_dimensions
         self.polarities = polarities
         self.number_of_features = number_of_features
         self.tau = time_constant
-        self.learning_rate = learning_rate
         self.radius = int(np.divide(surface_dimensions[0]-1, 2))
 
         if network.total_number_of_events != None:
@@ -23,6 +22,7 @@ class Layer:
         self.bases = []
         for f in range(number_of_features):
             self.bases.append(np.random.rand(self.polarities, surface_dimensions[0], surface_dimensions[1]))
+        self.basis_activitions = np.zeros(number_of_features)
         self.processed_events = 0
         self.min_corr_score = 0.1
 
@@ -70,8 +70,10 @@ class Layer:
         best_corr = corrs[best_index]
 
         if self.network.learning_enabled and best_index != -1 and best_corr > self.min_corr_score:
-            self.bases[best_index] += (self.learning_rate * best_corr
-                                      * (timesurface.data - self.bases[best_index]))
+            self.basis_activitions[best_index] += 1
+            learning_rate = 1. / self.basis_activitions[best_index]
+            print("lr for basis " + str(best_index) + " is " + str(learning_rate))
+            self.bases[best_index] += learning_rate * (timesurface.data - self.bases[best_index])
 
         return best_index, best_corr
 

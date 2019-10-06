@@ -15,7 +15,6 @@ class Network():
     def __init__(self, surface_dimensions_per_layer,
                  number_of_features_per_layer,
                  time_constants_per_layer,
-                 learning_rates_per_layer,
                  sensor_size,
                  learning_enabled=True,
                  plot_evolution=True,
@@ -35,7 +34,6 @@ class Network():
             self.layers.append(Layer(self, l, surface_dimension, polarities,
                                      number_of_features_per_layer[l],
                                      time_constants_per_layer[l],
-                                     learning_rates_per_layer[l],
                                      sensor_size))
             polarities = number_of_features_per_layer[l]
         self.number_of_layers = len(self.layers)
