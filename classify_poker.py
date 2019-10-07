@@ -9,8 +9,7 @@ testloader = Dataloader(testset, shuffle=True)
 
 surface_dimensions = [(11, 11)]
 number_of_features = [16]
-time_constants = [1e3]
-minimum_events = [5]
+time_constants = [5e3]
 sensor_size = (35, 35)
 total_number_of_events = 89852 # di # 93082 # sp # testset.total_number_of_events()
 

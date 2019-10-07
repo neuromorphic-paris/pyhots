@@ -13,7 +13,7 @@ class Layer:
         self.number_of_features = number_of_features
         self.tau = time_constant
         self.radius = int(np.divide(surface_dimensions[0]-1, 2))
-        self.minimum_events = 8
+        self.minimum_events = 2 * self.radius
         if network.total_number_of_events != None:
             self.all_timesurfaces = np.zeros((network.total_number_of_events, polarities, surface_dimensions[0], surface_dimensions[1]))
             self.all_best_ids = np.zeros((network.total_number_of_events))
@@ -68,23 +68,29 @@ class Layer:
                                           self.network.sensor_size[1] + self.radius*2))
         self.timestamp_memory -= self.tau * 3 + 1
 
-    def _correlate_with_bases(self, timesurface, method='dotproduct'):
+    def _correlate_with_bases(self, timesurface, method='cosine_similarity'):
         corrs = []
         for index, basis in enumerate(self.bases):
-            if method == 'dotproduct':
-                corrs.append(self._correlation(basis, timesurface.data))
+            if method == 'cosine_similarity':
+                corrs.append(self.cosine_similarity(basis, timesurface.data))
         best_index = np.argmax(corrs)
         best_corr = corrs[best_index]
 
         if self.network.learning_enabled and best_corr > self.min_corr_score:
             self.basis_activations[best_index] += 1
             learning_rate = self.learning_rate(self.basis_activations[index])
-            self.bases[best_index] += learning_rate * (timesurface.data - self.bases[best_index])
+            self.bases[best_index] += learning_rate * best_corr * (timesurface.data - self.bases[best_index])
         return best_index, best_corr
 
     def learning_rate(self, activations):
         # return 0.1 / (1 + activations / 1000)
-        return 1 / (1 + activations / 100)
+        return 1 / (1 + activations / 1000)
 
-    def _correlation(self, basis, surface):
+    def cosine_similarity(self, basis, surface):
         return np.sum(basis*surface) / np.sqrt(np.sum(basis**2) * np.sum(surface**2))
+
+    def cosine_similarity1(self, basis, surface):
+        dotprod = np.dot(basis, surface)
+        norm = np.linalg.norm(basis) * np.linalg.norm(surface)
+        ipdb.set_trace()
+        return dotprod/norm
