@@ -68,10 +68,10 @@ class Layer:
                                           self.network.sensor_size[1] + self.radius*2))
         self.timestamp_memory -= self.tau * 3 + 1
 
-    def _correlate_with_bases(self, timesurface, method='euclidian'):
+    def _correlate_with_bases(self, timesurface, method='dotproduct'):
         corrs = []
         for index, basis in enumerate(self.bases):
-            if method == 'euclidian':
+            if method == 'dotproduct':
                 corrs.append(self._correlation(basis, timesurface.data))
         best_index = np.argmax(corrs)
         best_corr = corrs[best_index]
@@ -86,5 +86,5 @@ class Layer:
         # return 0.1 / (1 + activations / 1000)
         return 1 / (1 + activations / 100)
 
-    def _correlation(self, a, b):
-        return (a*b).sum() / (np.sqrt((a*a).sum() * (b*b).sum()))
+    def _correlation(self, basis, surface):
+        return np.sum(basis*surface) / np.sqrt(np.sum(basis**2) * np.sum(surface**2))
