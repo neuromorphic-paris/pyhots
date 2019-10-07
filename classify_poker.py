@@ -26,9 +26,9 @@ testiterator = iter(testloader)
 
 stop = 0
 for events, label in testiterator:
-    if label == 'di':
-        print('Feeding ' + str(label) + '...')
-        net(events)
+    #if label == 'di':
+    print('Feeding ' + str(label) + '...')
+    net(events)
     #stop += 1
     #if stop == 10:
     #    break

@@ -24,7 +24,8 @@ class Layer:
             self.bases.append(np.random.rand(self.polarities, surface_dimensions[0], surface_dimensions[1]))
         self.basis_activations = np.zeros(number_of_features, dtype=np.int)
         self.processed_events = 0
-        self.min_corr_score = 0.1
+        self.passed_events = 0
+        self.min_corr_score = 0.2
 
     def process(self, event):
         if event == None:
@@ -50,6 +51,7 @@ class Layer:
             print(corr_score)
         if corr_score > self.min_corr_score:
             event.p = best_prototype_id
+            self.passed_events += 1
             return event
         else:
             return None

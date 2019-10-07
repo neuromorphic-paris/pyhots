@@ -76,15 +76,19 @@ class Network():
     def _prepare_plotting(self, number_of_features):
         plt.close()
         side_length = int(np.sqrt(number_of_features))
-        fig, axes = plt.subplots(side_length,side_length)
+        fig, axes = plt.subplots(side_length, side_length)  # , dpi=80)
         axes = np.reshape(axes, -1)
         fig.suptitle('first layer bases')
         axisImages = []
         for index, axis in enumerate(axes):
-            axisImages.append(axis.imshow(self.layers[0].bases[index][0], vmin=0, vmax=1, cmap = plt.cm.hot, interpolation = 'none', origin = 'upper'))
+            axisImages.append(axis.imshow(self.layers[0].bases[index][0], vmin=0, vmax=1,
+                              cmap = plt.cm.hot, interpolation = 'none', origin = 'upper'))
             axis.axis('off')
         fig.subplots_adjust(right=0.8)
         cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
         fig.colorbar(axisImages[0], cax=cbar_ax)
         plt.pause(0.0001)
+        figManager = plt.get_current_fig_manager()
+        figManager.window.setGeometry(0, 0, 900, 1500)
+        figManager.window.setFocus()
         return fig, axes, axisImages
