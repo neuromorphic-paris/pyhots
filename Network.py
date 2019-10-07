@@ -39,7 +39,7 @@ class Network():
         self.number_of_layers = len(self.layers)
         self.sensor_size = sensor_size
         if self.plot_evolution:
-            self.fig, self.axisImages = self._prepare_plotting(number_of_features_per_layer[0])
+            self.fig, self.axes, self.axisImages = self._prepare_plotting(number_of_features_per_layer[0])
         self.processed_recordings = 0
 
     def __call__(self, recording):
@@ -68,6 +68,8 @@ class Network():
         if self.plot_evolution:
             for index, axisImage in enumerate(self.axisImages):
                 axisImage.set_data(self.layers[0].bases[index][0])
+                self.axes[index].title.set_text(self.layers[0].basis_activations[index])
+
             self.fig.suptitle(str(self.processed_recordings) + ' processed recordings')
             plt.pause(0.01)
 
@@ -77,9 +79,12 @@ class Network():
         fig, axes = plt.subplots(side_length,side_length)
         axes = np.reshape(axes, -1)
         fig.suptitle('first layer bases')
-        ax = []
+        axisImages = []
         for index, axis in enumerate(axes):
-            ax.append(axis.imshow(self.layers[0].bases[index][0], cmap = plt.cm.hot, interpolation = 'none', origin = 'upper'))
+            axisImages.append(axis.imshow(self.layers[0].bases[index][0], vmin=0, vmax=1, cmap = plt.cm.hot, interpolation = 'none', origin = 'upper'))
             axis.axis('off')
+        fig.subplots_adjust(right=0.8)
+        cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
+        fig.colorbar(axisImages[0], cax=cbar_ax)
         plt.pause(0.0001)
-        return fig, ax
+        return fig, axes, axisImages
