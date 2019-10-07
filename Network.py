@@ -43,8 +43,6 @@ class Network():
         self.processed_recordings = 0
 
     def __call__(self, recording):
-        # cast to rec array so reading code becomes easier since I can use
-        # things like event.t and the like
         # recording = recording.view(type=np.recarray, dtype=[('t', np.float_), ('x', np.float_),
                                                      # ('y', np.float_), ('p', np.float_)])
         recording['is_increase'] = recording['is_increase'].astype(np.int8)
@@ -68,7 +66,8 @@ class Network():
         if self.plot_evolution:
             for index, axisImage in enumerate(self.axisImages):
                 axisImage.set_data(self.layers[0].bases[index][0])
-                self.axes[index].title.set_text(self.layers[0].basis_activations[index])
+                learning_rate = self.layers[0].learning_rate(self.layers[0].basis_activations[index])
+                self.axes[index].title.set_text(round(learning_rate, 5))
 
             self.fig.suptitle(str(self.processed_recordings) + ' processed recordings')
             plt.pause(0.01)
@@ -78,7 +77,7 @@ class Network():
         side_length = int(np.sqrt(number_of_features))
         fig, axes = plt.subplots(side_length, side_length)  # , dpi=80)
         axes = np.reshape(axes, -1)
-        fig.suptitle('first layer bases')
+        fig.suptitle('first layer bank')
         axisImages = []
         for index, axis in enumerate(axes):
             axisImages.append(axis.imshow(self.layers[0].bases[index][0], vmin=0, vmax=1,

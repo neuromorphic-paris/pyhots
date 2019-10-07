@@ -15,4 +15,4 @@ class TimeSurface:
         self.data = self.data / np.sum(self.data)
 
     def number_of_events(self):
-        return np.sum(self.data > 0, axis=(1,2))
+        return np.sum(self.data > 0)  # , axis=(1,2))

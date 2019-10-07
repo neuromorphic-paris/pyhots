@@ -7,12 +7,11 @@ testset = POKERDVS(save_to='./data')
 # %%
 testloader = Dataloader(testset, shuffle=True)
 
-# %%
 surface_dimensions = [(11, 11)]
 number_of_features = [16]
 time_constants = [1e3]
-sensor_size = (35, 35)
 minimum_events = [5]
+sensor_size = (35, 35)
 total_number_of_events = 89852 # di # 93082 # sp # testset.total_number_of_events()
 
 net = Network(surface_dimensions_per_layer=surface_dimensions,
@@ -24,11 +23,9 @@ net = Network(surface_dimensions_per_layer=surface_dimensions,
 
 testiterator = iter(testloader)
 
-stop = 0
 for events, label in testiterator:
-    #if label == 'di':
-    print('Feeding ' + str(label) + '...')
-    net(events)
-    #stop += 1
-    #if stop == 10:
-    #    break
+    if label == 'di':
+        print('Feeding ' + str(label) + '...')
+        net(events)
+
+first = net.layers[0]
