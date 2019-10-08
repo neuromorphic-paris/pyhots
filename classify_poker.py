@@ -2,8 +2,8 @@ from pyhots.POKERDVS import POKERDVS
 from spike_data_augmentation.datasets.dataloader import Dataloader
 from pyhots.Network import Network
 
-testset = POKERDVS(save_to='./data')
-
+testset = POKERDVS(save_to='./data',
+                   file_dir='/home/gregorlenz/Development/Github/HOTS-DOJO/Datasets/Cards/usable/pips')
 # %%
 testloader = Dataloader(testset, shuffle=True)
 
