@@ -3,7 +3,7 @@ from spike_data_augmentation.datasets.dataloader import Dataloader
 from pyhots.Network import Network
 
 testset = POKERDVS(save_to='./data',
-                   file_dir='/home/gregorlenz/Development/Github/HOTS-DOJO/Datasets/Cards/usable/pips')
+                   file_dir='/home/jmatthieu/WORK/CODE/collaborations/HOTS-Dojo/Datasets/Cards/usable/pips')
 # %%
 testloader = Dataloader(testset, shuffle=True)
 
@@ -11,7 +11,7 @@ surface_dimensions = [(11, 11)]
 number_of_features = [16]
 time_constants = [5e3]
 sensor_size = (35, 35)
-total_number_of_events = testset.total_number_of_events()
+# total_number_of_events = testset.total_number_of_events()
 
 net = Network(surface_dimensions_per_layer=surface_dimensions,
               number_of_features_per_layer=number_of_features,
@@ -23,8 +23,8 @@ net = Network(surface_dimensions_per_layer=surface_dimensions,
 testiterator = iter(testloader)
 
 for events, label in testiterator:
-    if label == 'di':
-        print('Feeding ' + str(label) + '...')
-        net(events)
+    # if label == 'di':
+    print('Feeding ' + str(label) + '...')
+    net(events)
 
 first = net.layers[0]
