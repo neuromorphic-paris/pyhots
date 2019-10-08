@@ -1,5 +1,5 @@
 import numpy as np
-from TimeSurface import TimeSurface
+from pyhots.TimeSurface import TimeSurface
 import ipdb
 
 

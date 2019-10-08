@@ -5,7 +5,7 @@ Created on Sat Jun 29 23:00:14 2019
 
 @author: gregorlenz
 """
-from Layer import Layer
+from pyhots.Layer import Layer
 import numpy as np
 import matplotlib.pyplot as plt
 import ipdb
