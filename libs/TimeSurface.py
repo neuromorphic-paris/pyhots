@@ -19,3 +19,8 @@ class TimeSurface:
 
     def number_of_events(self):
         return np.sum(self.data > 0)  # , axis=(1,2))
+
+    def entropy(self):
+        nts = self.data + 1e-10
+        nts /= nts.sum()
+        return -(np.log2(nts)*nts).sum()

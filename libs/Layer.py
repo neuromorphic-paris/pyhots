@@ -12,7 +12,7 @@ class Layer:
         self.polarities = polarities
         self.number_of_features = number_of_features
         self.tau = time_constant
-        self.radius = int(np.divide(surface_dimensions[0]-1, 2))
+        self.radius = (surface_dimensions[0]-1) // 2
         self.minimum_events = 2 * self.radius
         if network.total_number_of_events != None:
             self.all_timesurfaces = np.zeros((network.total_number_of_events, polarities, surface_dimensions[0], surface_dimensions[1]))
@@ -20,8 +20,8 @@ class Layer:
         else:
             self.all_timesurfaces = []
         self.bases = []
-        for f in range(number_of_features):
-            self.bases.append(np.random.rand(self.polarities, surface_dimensions[0], surface_dimensions[1]))
+        #for f in range(number_of_features):
+        #    self.bases.append(np.random.rand(self.polarities, surface_dimensions[0], surface_dimensions[1]))
         self.basis_activations = np.zeros(number_of_features, dtype=np.int)
         self.processed_events = 0
         self.passed_events = 0
@@ -42,6 +42,7 @@ class Layer:
 
         # correlate with bases of this layer if enough events
         if timesurface.number_of_events() > self.minimum_events:
+            self.check_prototypes(timesurface)
             best_prototype_id, corr_score = self._correlate_with_bases(timesurface)
 
             if self.all_timesurfaces != []:
@@ -67,6 +68,9 @@ class Layer:
                                           self.network.sensor_size[0] + self.radius*2,
                                           self.network.sensor_size[1] + self.radius*2))
         self.timestamp_memory -= self.tau * 3 + 1
+
+    #def check_prototypes(self):
+
 
     def _correlate_with_bases(self, timesurface, method='cosine_similarity'):
         corrs = []

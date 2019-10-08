@@ -15,11 +15,9 @@ testloader = spike_data_augmentation.datasets.Dataloader(testset, shuffle=False)
 
 # %%
 
-surface_dimensions = [(5, 5)]
-number_of_features = [2]
-time_constants = [1e5]
-sensor_size = (34, 34)
-minimum_events = [5]
+surface_dimensions = [(11, 11)]
+number_of_features = [16]
+time_constants = [5e3]
 
 iterator = iter(testloader)
 events, target = next(iterator)
