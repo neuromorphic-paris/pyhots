@@ -53,6 +53,7 @@ class Network():
         assert max(recording.y) < self.sensor_size[1]
         assert all(x <= y for x, y in zip(recording.t, recording.t[1:]))
         [layer.reset_memory() for layer in self.layers]
+        [layer.enable_new_base() for layer in self.layers]
         for event in recording:
             for index, layer in enumerate(self.layers):
                 event = layer.process(event)
@@ -65,10 +66,16 @@ class Network():
 
         if self.plot_evolution:
             for index, axisImage in enumerate(self.axisImages):
-                img = np.hstack((self.layers[0].bases[index][0],self.layers[0].bases[index][1]))
+                if index < len(self.layers[0].bases):
+                    img = np.hstack((self.layers[0].bases[index][0],self.layers[0].bases[index][1]))
+                else:
+                    size_feature = self.layers[0].surface_dimensions
+                    img = np.zeros((size_feature[0], size_feature[1]*2), dtype = float)
                 axisImage.set_data(img)
                 learning_rate = self.layers[0].learning_rate(self.layers[0].basis_activations[index])
-                self.axes[index].title.set_text(round(learning_rate, 5))
+                n_acti = self.layers[0].basis_activations[index]
+                stitle = 'A=' + str(n_acti) + '\nlr=' + str(round(learning_rate, 5))
+                self.axes[index].title.set_text(stitle)
 
             self.fig.suptitle(str(self.processed_recordings) + ' processed recordings')
             plt.pause(0.01)
