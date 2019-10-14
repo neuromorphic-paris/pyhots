@@ -63,13 +63,11 @@ class Layer:
             if len(self.bases) < self.number_of_features:
                 if not self.wait_for_next_file:
                     self.bases.append(timesurface.data)
-                    print('added new base ' + str(len(self.bases)) + '/' + str(self.number_of_features))
                     self.reboot_base_activity.append(0)
                     self.wait_for_next_file = True
                     return None
 
             else: # else process
-                #self.check_prototypes(timesurface)
                 best_prototype_id, corr_score = self._correlate_with_bases(timesurface)
                 self.reboot_layer_total_activity += 1
                 self.reboot_base_activity[best_prototype_id] = self.reboot_layer_total_activity

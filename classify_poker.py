@@ -1,10 +1,8 @@
 from pyhots.POKERDVS import POKERDVS
 from spike_data_augmentation.datasets.dataloader import Dataloader
 from pyhots.Network import Network
-import ipdb
 
-testset = POKERDVS(save_to='./data',
-                   file_dir='/home/gregorlenz/Development/Github/HOTS-DOJO/Datasets/Cards/usable/pips')
+testset = POKERDVS(file_dir='/home/gregorlenz/Development/Github/HOTS-DOJO/Datasets/Cards/usable/pips')
 # %%
 surface_dimensions = [(5, 5)]
 number_of_features = [16]
@@ -32,7 +30,7 @@ for index, events_and_label in enumerate(iter(testloader)):
 testloader = Dataloader(testset, shuffle=True)
 testiterator = iter(testloader)
 for events, label in testiterator:
-    if counts[label] < 17:
+    if counts[label] < 16:
         net(events)
         counts[label] += 1
         print('Processed', end='')

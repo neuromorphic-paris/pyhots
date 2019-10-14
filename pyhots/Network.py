@@ -8,6 +8,7 @@ Created on Sat Jun 29 23:00:14 2019
 from pyhots.Layer import Layer
 import numpy as np
 import matplotlib.pyplot as plt
+import sparse
 import ipdb
 
 
@@ -51,16 +52,28 @@ class Network():
                                           ('y', '<u2'), ('p', np.int8)])
         assert max(recording.x) < self.sensor_size[0]
         assert max(recording.y) < self.sensor_size[1]
-        assert all(x <= y for x, y in zip(recording.t, recording.t[1:]))
+        assert all(t1 <= t2 for t1, t2 in zip(recording.t, recording.t[1:]))
         [layer.reset_memory() for layer in self.layers]
-        [layer.enable_new_base() for layer in self.layers]
+
+        if len(self.layers[0].bases) < self.layers[0].number_of_features:
+            # look for random event in recording, create surf and add as base
+            select = int(np.random.uniform(1, len(recording)))
+            event = recording[select]
+            radius = self.layers[0].radius
+
+            ipdb.set_trace()
+            mask = (recording.t <= event.t)\
+                    & (recording.x > event.x - radius)\
+                    & (recording.x < event.x + radius + 1)\
+                    & (recording.y > event.y - radius)\
+                    & (recording.y < event.y + radius + 1)
+            #surface = np.zeros(self.layers[0].surface_dimensions)
+            surface = np.max(sparse.COO((recording[mask].t, (recording[mask].t, recording[mask].x, recording[mask].y))), axis=0)
+            print('added new base ' + str(len(self.bases)) + '/' + str(self.number_of_features))
+
         for event in recording:
             for index, layer in enumerate(self.layers):
                 event = layer.process(event)
-                #if index == 0:
-                #feature_number = event.p
-                #self.ax[feature_number].set_data(layer.bases[feature_number][0])
-                #self.fig.suptitle(str(layer.processed_events) + ' processed events in layer ' + str(index))
 
         self.processed_recordings += 1
 
