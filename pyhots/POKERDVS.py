@@ -6,6 +6,8 @@ from spike_data_augmentation.datasets.dataset import Dataset
 
 
 class POKERDVS(Dataset):
+    classes = ["cl", "he", "di", "sp"]
+
     def __init__(self, save_to, file_dir, transform=None):
         super(POKERDVS, self).__init__(save_to, transform=transform)
 
