@@ -20,8 +20,6 @@ class Layer:
         else:
             self.all_timesurfaces = []
         self.bases = []
-        # for f in range(number_of_features):
-        #     self.bases.append(np.random.rand(self.polarities, surface_dimensions[0], surface_dimensions[1]))
         self.basis_activations = np.zeros(number_of_features, dtype=np.int)
         self.processed_events = 0
         self.passed_events = 0

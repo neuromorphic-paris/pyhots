@@ -1,12 +1,11 @@
 from pyhots.POKERDVS import POKERDVS
 from spike_data_augmentation.datasets.dataloader import Dataloader
 from pyhots.Network import Network
+import ipdb
 
 testset = POKERDVS(save_to='./data',
-                   file_dir='/home/jmatthieu/WORK/CODE/collaborations/HOTS-Dojo/Datasets/Cards/usable/pips')
+                   file_dir='/home/gregorlenz/Development/Github/HOTS-DOJO/Datasets/Cards/usable/pips')
 # %%
-# testloader = Dataloader(testset, shuffle=True)
-
 surface_dimensions = [(5, 5)]
 number_of_features = [16]
 time_constants = [5e3]
@@ -20,16 +19,25 @@ net = Network(surface_dimensions_per_layer=surface_dimensions,
               plot_evolution=True,
               total_number_of_events=None)
 
-# testiterator = iter(testloader)
+counts = dict(zip(POKERDVS.classes, [0, 0, 0, 0]))
 
-n_boucle = 5
-for n in range(n_boucle):
-    print('\n------*\nLoop ' + str(n) + ' |\n------*')
-    testloader = Dataloader(testset, shuffle=True)
-    testiterator = iter(testloader)
-    for events, label in testiterator:
-        # if label == 'di':
-        print('Feeding ' + str(label) + '...')
+# pick 16 random files to choose bases from
+testloader = Dataloader(testset, shuffle=True)
+for index, events_and_label in enumerate(iter(testloader)):
+    net(events_and_label[0])
+    if index >= number_of_features[0]:
+        break
+
+# start the learning
+testloader = Dataloader(testset, shuffle=True)
+testiterator = iter(testloader)
+for events, label in testiterator:
+    if counts[label] < 17:
         net(events)
+        counts[label] += 1
+        print('Processed', end='')
+        for key, value in counts.items():
+            print(' ' + str(value) + ' ' + key + ',', end='')
+        print('.')
 
 first = net.layers[0]
