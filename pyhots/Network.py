@@ -8,7 +8,7 @@ Created on Sat Jun 29 23:00:14 2019
 from pyhots.Layer import Layer
 import numpy as np
 import matplotlib.pyplot as plt
-import sparse
+from pyhots.TimeSurface import TimeSurface
 import ipdb
 
 
@@ -61,15 +61,23 @@ class Network():
             event = recording[select]
             radius = self.layers[0].radius
 
-            ipdb.set_trace()
             mask = (recording.t <= event.t)\
-                    & (recording.x > event.x - radius)\
+                    & (recording.t >= event.t - self.layers[0].tau)\
+                    & (recording.x >= event.x - radius)\
                     & (recording.x < event.x + radius + 1)\
-                    & (recording.y > event.y - radius)\
+                    & (recording.y >= event.y - radius)\
                     & (recording.y < event.y + radius + 1)
-            #surface = np.zeros(self.layers[0].surface_dimensions)
-            surface = np.max(sparse.COO((recording[mask].t, (recording[mask].t, recording[mask].x, recording[mask].y))), axis=0)
-            print('added new base ' + str(len(self.bases)) + '/' + str(self.number_of_features))
+            surface = np.zeros((2, self.layers[0].surface_dimensions[0], self.layers[0].surface_dimensions[1]))
+            for e in recording[mask]:
+                if e.p == 1:
+                    surface[0, e.x + radius - event.x, e.y + radius - event.y] = e.t
+                else:
+                    surface[1, e.x + radius - event.x, e.y + radius - event.y] = e.t
+            time_surface = TimeSurface(self.layers[0], surface)
+            self.layers[0].bases.append(time_surface.data)
+            self.layers[0].reboot_base_activity.append(0)
+            print('added new base ' + str(len(self.layers[0].bases)) + '/' + str(self.layers[0].number_of_features))
+            return
 
         for event in recording:
             for index, layer in enumerate(self.layers):
