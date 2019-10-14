@@ -8,7 +8,7 @@ from spike_data_augmentation.datasets.dataset import Dataset
 class POKERDVS(Dataset):
     classes = ["cl", "he", "di", "sp"]
 
-    def __init__(self, save_to, file_dir, transform=None):
+    def __init__(self, file_dir, save_to='./data', transform=None):
         super(POKERDVS, self).__init__(save_to, transform=transform)
 
         for path, dirs, files in os.walk(file_dir):
