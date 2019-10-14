@@ -53,6 +53,7 @@ class Network():
         assert max(recording.y) < self.sensor_size[1]
         assert all(x <= y for x, y in zip(recording.t, recording.t[1:]))
         [layer.reset_memory() for layer in self.layers]
+        [layer.enable_new_base() for layer in self.layers]
         for event in recording:
             for index, layer in enumerate(self.layers):
                 event = layer.process(event)
@@ -65,9 +66,16 @@ class Network():
 
         if self.plot_evolution:
             for index, axisImage in enumerate(self.axisImages):
-                axisImage.set_data(self.layers[0].bases[index][0])
+                if index < len(self.layers[0].bases):
+                    img = np.hstack((self.layers[0].bases[index][0],self.layers[0].bases[index][1]))
+                else:
+                    size_feature = self.layers[0].surface_dimensions
+                    img = np.zeros((size_feature[0], size_feature[1]*2), dtype = float)
+                axisImage.set_data(img)
                 learning_rate = self.layers[0].learning_rate(self.layers[0].basis_activations[index])
-                self.axes[index].title.set_text(round(learning_rate, 5))
+                n_acti = self.layers[0].basis_activations[index]
+                stitle = 'A=' + str(n_acti) + '\nlr=' + str(round(learning_rate, 5))
+                self.axes[index].title.set_text(stitle)
 
             self.fig.suptitle(str(self.processed_recordings) + ' processed recordings')
             plt.pause(0.01)
@@ -79,15 +87,17 @@ class Network():
         axes = np.reshape(axes, -1)
         fig.suptitle('first layer bank')
         axisImages = []
+        size_feature = self.layers[0].surface_dimensions
+        image_for_plot = np.zeros((size_feature[0], size_feature[1]*2), dtype = float)
         for index, axis in enumerate(axes):
-            axisImages.append(axis.imshow(self.layers[0].bases[index][0], vmin=0, vmax=1,
+            axisImages.append(axis.imshow(image_for_plot, vmin=0, vmax=1,
                               cmap = plt.cm.hot, interpolation = 'none', origin = 'upper'))
             axis.axis('off')
         fig.subplots_adjust(right=0.8)
         cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
         fig.colorbar(axisImages[0], cax=cbar_ax)
         plt.pause(0.0001)
-        figManager = plt.get_current_fig_manager()
-        figManager.window.setGeometry(0, 0, 900, 1500)
-        figManager.window.setFocus()
+        # figManager = plt.get_current_fig_manager()
+        # figManager.window.setGeometry(0, 0, 900, 1500)
+        # figManager.window.setFocus()
         return fig, axes, axisImages
