@@ -15,7 +15,8 @@ net = Network(surface_dimensions_per_layer=surface_dimensions,
               time_constants_per_layer=time_constants,
               sensor_size=sensor_size,
               plot_evolution=True,
-              total_number_of_events=None)
+              total_number_of_events=None,
+              reboot_bases=True)
 
 counts = dict(zip(POKERDVS.classes, [0, 0, 0, 0]))
 
@@ -31,9 +32,11 @@ testloader = Dataloader(testset, shuffle=True)
 testiterator = iter(testloader)
 for events, label in testiterator:
     if counts[label] < 16:
-        net(events)
         counts[label] += 1
+        net(events)
         print('Processed', end='')
         for key, value in counts.items():
             print(' ' + str(value) + ' ' + key + ',', end='')
         print('.')
+
+first = net.layers[0]

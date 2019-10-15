@@ -95,10 +95,10 @@ class Network():
                 axisImage.set_data(img)
                 learning_rate = self.layers[0].learning_rate(self.layers[0].basis_activations[index])
                 n_acti = self.layers[0].basis_activations[index]
-                stitle = 'A=' + str(n_acti) + '\nlr=' + str(round(learning_rate, 5))
+                stitle = str(index) + ': A=' + str(n_acti) + '\nlr=' + str(round(learning_rate, 5))
                 self.axes[index].title.set_text(stitle)
 
-            self.fig.suptitle(str(self.processed_recordings) + ' processed recordings')
+            self.fig.suptitle(str(self.processed_recordings) + ' recordings, ' + str(self.layers[0].processed_events) + ' events in total')
             plt.pause(0.01)
 
     def _prepare_plotting(self, number_of_features):

@@ -23,13 +23,11 @@ class Layer:
         self.processed_events = 0
         self.passed_events = 0
         self.refused_events = 0
-        self.min_corr_score = 0.3
         # Reboot bases if they are useless
         self.reboot_bases = reboot_bases
-        self.reboot_at = 10000 # number of events without acti before reboot
-        self.reboot_immunity = 25000 # once a base has this much number of acti, it can not be rebooted
-        self.reboot_factor = 0.2 # factor applied to the reboot
-        self.reboot_layer_total_activity = 0
+        self.reboot_at = 5000 # number of events without activation before reboot
+        self.reboot_immunity = 5000 # once a base has this much number of acti, it can not be rebooted
+        self.reboot_factor = 1 # factor applied to the reboot
         self.reboot_base_activity = []
 
     def process(self, event):
@@ -46,25 +44,23 @@ class Layer:
 
         # correlate with bases of this layer if enough events
         if timesurface.number_of_events() > self.minimum_events:
+            self.passed_events += 1
             best_prototype_id, corr_score = self._correlate_with_bases(timesurface)
-            self.reboot_layer_total_activity += 1
-            self.reboot_base_activity[best_prototype_id] = self.reboot_layer_total_activity
+            self.reboot_base_activity[best_prototype_id] = self.passed_events
 
             if self.all_timesurfaces != []:
                 self.all_timesurfaces[self.processed_events,:,:,:] = timesurface.data
                 self.all_best_ids[self.processed_events] = best_prototype_id
 
             event.p = best_prototype_id
-            self.passed_events += 1
 
             # check reboot
-            if self.reboot_bases and len(self.reboot_base_activity) == self.number_of_features:
+            if self.reboot_bases:
                 for idbase in range(self.number_of_features):
-                    if (self.reboot_layer_total_activity - self.reboot_base_activity[idbase]) > self.reboot_at: # reboot!
+                    if (self.passed_events - self.reboot_base_activity[idbase]) > self.reboot_at: # reboot!
                         self.bases[idbase] += self.reboot_factor * (timesurface.data - self.bases[idbase])
-                        self.bases[idbase] = np.clip(self.bases[idbase], a_min = 0, a_max= 1)
-                        self.reboot_base_activity[idbase] = self.reboot_layer_total_activity
                         self.basis_activations[idbase] = 0
+                        self.reboot_base_activity[idbase] = self.passed_events
                         print('Reboot ' + str(idbase))
             return event
         else:
