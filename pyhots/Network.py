@@ -20,7 +20,8 @@ class Network():
                  learning_enabled=True,
                  plot_evolution=True,
                  total_number_of_events=None,
-                 reboot_bases=True,):
+                 reboot_bases=True,
+                 merge_polarities=False):
         assert len(surface_dimensions_per_layer)\
                 == len(number_of_features_per_layer)\
                 == len(time_constants_per_layer)
@@ -31,7 +32,9 @@ class Network():
         self.plot_evolution = plot_evolution
         self.minimum_events = 5
         self.total_number_of_events = total_number_of_events
-        polarities = 2  # On and Off events in the first layer
+        self.merge_polarities = merge_polarities
+        polarities = 1 if merge_polarities else 2
+        self.first_layer_polarities = 1 if merge_polarities else 2
         for l, surface_dimension in enumerate(surface_dimensions_per_layer):
             self.layers.append(Layer(self, l, surface_dimension, polarities,
                                      number_of_features_per_layer[l],
@@ -56,6 +59,7 @@ class Network():
         assert max(recording.y) < self.sensor_size[1]
         assert all(t1 <= t2 for t1, t2 in zip(recording.t, recording.t[1:]))
         [layer.reset_memory() for layer in self.layers]
+        if self.merge_polarities: recording.p = np.zeros(len(recording))
 
         if len(self.layers[0].bases) < self.layers[0].number_of_features:
             # look for random event in recording, create surf and add as base
@@ -70,9 +74,9 @@ class Network():
                     & (recording.y >= event.y - radius)\
                     & (recording.y < event.y + radius + 1)
             dims = self.layers[0].surface_dimensions
-            time_window = np.zeros((2, dims[0], dims[1]))
+            time_window = np.zeros((self.first_layer_polarities, dims[0], dims[1]))
             for e in recording[mask]:
-                    time_window[e.p, e.x + radius - event.x, e.y + radius - event.y] = e.t
+                time_window[e.p, e.x + radius - event.x, e.y + radius - event.y] = e.t
             time_surface = TimeSurface(self.layers[0], time_window)
             self.layers[0].bases.append(time_surface.data)
             self.layers[0].reboot_base_activity.append(0)
@@ -88,10 +92,10 @@ class Network():
         if self.plot_evolution:
             for index, axisImage in enumerate(self.axisImages):
                 if index < len(self.layers[0].bases):
-                    img = np.hstack((self.layers[0].bases[index][0],self.layers[0].bases[index][1]))
+                    img = np.hstack(self.layers[0].bases[index])
                 else:
                     size_feature = self.layers[0].surface_dimensions
-                    img = np.zeros((size_feature[0], size_feature[1]*2), dtype = float)
+                    img = np.zeros((size_feature[0], size_feature[1]*self.first_layer_polarities), dtype = float)
                 axisImage.set_data(img)
                 learning_rate = self.layers[0].learning_rate(self.layers[0].basis_activations[index])
                 n_acti = self.layers[0].basis_activations[index]
@@ -109,7 +113,7 @@ class Network():
         fig.suptitle('first layer bank')
         axisImages = []
         size_feature = self.layers[0].surface_dimensions
-        image_for_plot = np.zeros((size_feature[0], size_feature[1]*2), dtype = float)
+        image_for_plot = np.zeros((size_feature[0], size_feature[1]*self.first_layer_polarities), dtype = float)
         for index, axis in enumerate(axes):
             axisImages.append(axis.imshow(image_for_plot, vmin=0, vmax=1,
                               cmap = plt.cm.hot, interpolation = 'none', origin = 'upper'))

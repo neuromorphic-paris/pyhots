@@ -7,11 +7,12 @@ from spike_data_augmentation.datasets.dataset import Dataset
 
 class POKERDVS(Dataset):
     classes = ["cl", "he", "di", "sp"]
+    sensor_size = (35, 35)
+    ordering = "txyp"
 
     def __init__(self, file_dir, save_to='./data', transform=None):
         super(POKERDVS, self).__init__(save_to, transform=transform)
-
-        counts = {'cl': 0, 'he': 0, 'di': 0, 'sp': 0}
+        counts = dict(zip(self.classes, [0, 0, 0, 0]))
         for path, dirs, files in os.walk(file_dir):
             files.sort()
             for file in files:
@@ -27,10 +28,8 @@ class POKERDVS(Dataset):
 
     def __getitem__(self, index):
         events, target = self.data[index], self.targets[index]
-
         if self.transform is not None:
-            events = self.transform(events)
-
+            events = self.transform(events, self.sensor_size, self.ordering)
         return events, target
 
     def __len__(self):
