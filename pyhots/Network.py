@@ -19,7 +19,8 @@ class Network():
                  sensor_size,
                  learning_enabled=True,
                  plot_evolution=True,
-                 total_number_of_events=None):
+                 total_number_of_events=None,
+                 reboot_bases=True,):
         assert len(surface_dimensions_per_layer)\
                 == len(number_of_features_per_layer)\
                 == len(time_constants_per_layer)
@@ -35,7 +36,8 @@ class Network():
             self.layers.append(Layer(self, l, surface_dimension, polarities,
                                      number_of_features_per_layer[l],
                                      time_constants_per_layer[l],
-                                     sensor_size))
+                                     sensor_size,
+                                     reboot_bases,))
             polarities = number_of_features_per_layer[l]
         self.number_of_layers = len(self.layers)
         self.sensor_size = sensor_size
@@ -67,13 +69,11 @@ class Network():
                     & (recording.x < event.x + radius + 1)\
                     & (recording.y >= event.y - radius)\
                     & (recording.y < event.y + radius + 1)
-            surface = np.zeros((2, self.layers[0].surface_dimensions[0], self.layers[0].surface_dimensions[1]))
+            dims = self.layers[0].surface_dimensions
+            time_window = np.zeros((2, dims[0], dims[1]))
             for e in recording[mask]:
-                if e.p == 1:
-                    surface[0, e.x + radius - event.x, e.y + radius - event.y] = e.t
-                else:
-                    surface[1, e.x + radius - event.x, e.y + radius - event.y] = e.t
-            time_surface = TimeSurface(self.layers[0], surface)
+                    time_window[e.p, e.x + radius - event.x, e.y + radius - event.y] = e.t
+            time_surface = TimeSurface(self.layers[0], time_window)
             self.layers[0].bases.append(time_surface.data)
             self.layers[0].reboot_base_activity.append(0)
             print('added new base ' + str(len(self.layers[0].bases)) + '/' + str(self.layers[0].number_of_features))

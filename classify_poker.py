@@ -19,7 +19,7 @@ net = Network(surface_dimensions_per_layer=surface_dimensions,
 
 counts = dict(zip(POKERDVS.classes, [0, 0, 0, 0]))
 
-# pick 16 random files to choose bases from
+# pick 16 random files and one surface each to initialise bases
 testloader = Dataloader(testset, shuffle=True)
 for index, events_and_label in enumerate(iter(testloader)):
     net(events_and_label[0])
@@ -37,5 +37,3 @@ for events, label in testiterator:
         for key, value in counts.items():
             print(' ' + str(value) + ' ' + key + ',', end='')
         print('.')
-
-first = net.layers[0]
