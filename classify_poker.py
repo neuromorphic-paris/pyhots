@@ -18,8 +18,6 @@ net = Network(surface_dimensions_per_layer=surface_dimensions,
               total_number_of_events=None,
               reboot_bases=True)
 
-counts = dict(zip(POKERDVS.classes, [0, 0, 0, 0]))
-
 # pick 16 random files and one surface each to initialise bases
 testloader = Dataloader(testset, shuffle=True)
 for index, events_and_label in enumerate(iter(testloader)):
@@ -27,16 +25,17 @@ for index, events_and_label in enumerate(iter(testloader)):
     if index >= number_of_features[0]:
         break
 
+counts = dict(zip(POKERDVS.classes, [0, 0, 0, 0]))
+
 # start the learning
 testloader = Dataloader(testset, shuffle=True)
 testiterator = iter(testloader)
 for events, label in testiterator:
-    if counts[label] < 16:
-        counts[label] += 1
-        net(events)
-        print('Processed', end='')
-        for key, value in counts.items():
-            print(' ' + str(value) + ' ' + key + ',', end='')
-        print('.')
+    counts[label] += 1
+    net(events)
+    print('Processed', end='')
+    for key, value in counts.items():
+        print(' ' + str(value) + ' ' + key + ',', end='')
+    print('.')
 
 first = net.layers[0]
