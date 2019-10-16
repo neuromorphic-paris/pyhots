@@ -3,25 +3,26 @@ from spike_data_augmentation.datasets.dataloader import Dataloader
 import spike_data_augmentation.transforms as transforms
 from pyhots.Network import Network
 
-transform = transforms.Compose([transforms.DropEvent(drop_probability=0.5),
+transform = transforms.Compose([transforms.DropEvent(drop_probability=0.0),
                                 ])
 
 testset = POKERDVS(file_dir='/home/gregorlenz/Development/Github/HOTS-DOJO/Datasets/Cards/usable/pips',
                    transform=transform)
 # %%
-surface_dimensions = [(5, 5)]
+surface_dimensions = [(11, 11)]
 number_of_features = [16]
 time_constants = [5e3]
-# total_number_of_events = testset.total_number_of_events()
+total_number_of_events = testset.total_number_of_events()
 
 net = Network(surface_dimensions_per_layer=surface_dimensions,
               number_of_features_per_layer=number_of_features,
               time_constants_per_layer=time_constants,
               sensor_size=POKERDVS.sensor_size,
               plot_evolution=True,
-              total_number_of_events=None,
-              reboot_bases=True,
+              total_number_of_events=total_number_of_events,
+              reboot_bases=False,
               merge_polarities=True,)
+              #drop_off_events=False,)
 
 # pick 16 random files and one surface each to initialise bases
 testloader = Dataloader(testset, shuffle=True)
