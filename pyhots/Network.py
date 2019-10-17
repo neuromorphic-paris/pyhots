@@ -121,7 +121,7 @@ class Network():
         fig.subplots_adjust(right=0.8)
         cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
         fig.colorbar(axisImages[0], cax=cbar_ax)
-        plt.pause(0.0001)
+        plt.pause(0.01)
         # figManager = plt.get_current_fig_manager()
         # figManager.window.setGeometry(0, 0, 900, 1500)
         # figManager.window.setFocus()
