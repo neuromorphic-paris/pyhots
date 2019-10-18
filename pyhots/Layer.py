@@ -18,6 +18,7 @@ class Layer:
         if network.total_number_of_events != None:
             self.all_timesurfaces = np.zeros((network.total_number_of_events, polarities, surface_dimensions[0], surface_dimensions[1]))
             self.all_best_ids = np.zeros((network.total_number_of_events))
+            self.all_labels = np.zeros((network.total_number_of_events))
         self.bases = []
         self.basis_activations = np.zeros(number_of_features, dtype=np.int)
         self.processed_events = 0
@@ -30,7 +31,7 @@ class Layer:
         self.reboot_factor = 1 # factor applied to the reboot
         self.reboot_base_activity = []
 
-    def process(self, event):
+    def process(self, event, label):
         if event == None:
             return None
         self.processed_events += 1
@@ -51,6 +52,7 @@ class Layer:
             if self.all_timesurfaces != []:
                 self.all_timesurfaces[self.processed_events,:,:,:] = timesurface.data
                 self.all_best_ids[self.processed_events] = best_prototype_id
+                self.all_labels[self.processed_events] = label
 
             event.p = best_prototype_id
 

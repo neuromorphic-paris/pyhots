@@ -48,7 +48,7 @@ class Network():
             self.fig, self.axes, self.axisImages = self._prepare_plotting(number_of_features_per_layer[0])
         self.processed_recordings = 0
 
-    def __call__(self, recording):
+    def __call__(self, recording, label):
         # recording = recording.view(type=np.recarray, dtype=[('t', np.float_), ('x', np.float_),
                                                      # ('y', np.float_), ('p', np.float_)])
         recording['is_increase'] = recording['is_increase'].astype(np.int8)
@@ -82,10 +82,12 @@ class Network():
             self.layers[0].reboot_base_activity.append(0)
             print('added new base ' + str(len(self.layers[0].bases)) + '/' + str(self.layers[0].number_of_features))
             return
+        
+        labelmap = {'cl': 0, 'he': 1, 'di': 2, 'sp': 3}
 
         for event in recording:
             for index, layer in enumerate(self.layers):
-                event = layer.process(event)
+                event = layer.process(event, labelmap[label])
 
         self.processed_recordings += 1
 
