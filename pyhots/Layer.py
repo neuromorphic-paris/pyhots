@@ -17,7 +17,7 @@ class Layer:
         self.all_timesurfaces = []
         if network.total_number_of_events != None:
             self.all_timesurfaces = np.zeros((network.total_number_of_events, polarities, surface_dimensions[0], surface_dimensions[1]))
-            self.all_best_ids = np.zeros((network.total_number_of_events))
+            self.all_best_ids = np.zeros((network.total_number_of_events)) - 1
             self.all_labels = np.zeros((network.total_number_of_events)) - 1
         self.bases = []
         self.basis_activations = np.zeros(number_of_features, dtype=np.int)
