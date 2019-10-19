@@ -80,7 +80,7 @@ class Network():
             time_surface = TimeSurface(self.layers[0], time_window)
             self.layers[0].bases.append(time_surface.data)
             self.layers[0].reboot_base_activity.append(0)
-            print('added new base ' + str(len(self.layers[0].bases)) + '/' + str(self.layers[0].number_of_features))
+            print('Added new base ' + str(len(self.layers[0].bases)) + '/' + str(self.layers[0].number_of_features))
             return
         
         labelmap = {'cl': 0, 'he': 1, 'di': 2, 'sp': 3}
@@ -105,7 +105,7 @@ class Network():
                 self.axes[index].title.set_text(stitle)
 
             self.fig.suptitle(str(self.processed_recordings) + ' recordings, ' + str(self.layers[0].processed_events) + ' events in total')
-            plt.pause(0.01)
+            # plt.pause(0.01)
 
     def _prepare_plotting(self, number_of_features):
         plt.close()
@@ -123,7 +123,8 @@ class Network():
         fig.subplots_adjust(right=0.8)
         cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
         fig.colorbar(axisImages[0], cax=cbar_ax)
-        plt.pause(0.01)
+        plt.show()
+        # plt.pause(0.01)
         # figManager = plt.get_current_fig_manager()
         # figManager.window.setGeometry(0, 0, 900, 1500)
         # figManager.window.setFocus()
