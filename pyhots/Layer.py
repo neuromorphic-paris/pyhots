@@ -62,11 +62,12 @@ class Layer:
                         self.reboot_base_activity[idbase] = self.passed_events
                         print('Reboot ' + str(idbase))
             self.passed_events += 1
+            self.processed_events += 1
             return event
         else:
             self.refused_events += 1
+            self.processed_events += 1
             return None
-        self.processed_events += 1
 
     def reset_memory(self):
         # create memory with padding
