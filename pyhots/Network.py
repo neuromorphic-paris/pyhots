@@ -84,7 +84,6 @@ class Network():
             return
         
         labelmap = {'cl': 0, 'he': 1, 'di': 2, 'sp': 3}
-
         for event in recording:
             for index, layer in enumerate(self.layers):
                 event = layer.process(event, labelmap[label])
@@ -103,9 +102,9 @@ class Network():
                 n_acti = self.layers[0].basis_activations[index]
                 stitle = str(index) + ': A=' + str(n_acti) + '\nlr=' + str(round(learning_rate, 5))
                 self.axes[index].title.set_text(stitle)
-
             self.fig.suptitle(str(self.processed_recordings) + ' recordings, ' + str(self.layers[0].processed_events) + ' events in total')
-            # plt.pause(0.01)
+            plt.show(self.fig)
+            self.fig.canvas.draw()
 
     def _prepare_plotting(self, number_of_features):
         plt.close()
@@ -123,9 +122,4 @@ class Network():
         fig.subplots_adjust(right=0.8)
         cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
         fig.colorbar(axisImages[0], cax=cbar_ax)
-        plt.show()
-        # plt.pause(0.01)
-        # figManager = plt.get_current_fig_manager()
-        # figManager.window.setGeometry(0, 0, 900, 1500)
-        # figManager.window.setFocus()
         return fig, axes, axisImages
