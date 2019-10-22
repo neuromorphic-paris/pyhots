@@ -80,7 +80,7 @@ class Network():
             time_surface = TimeSurface(self.layers[0], time_window)
             self.layers[0].bases.append(time_surface.data)
             self.layers[0].reboot_base_activity.append(0)
-            print('Added new base ' + str(len(self.layers[0].bases)) + '/' + str(self.layers[0].number_of_features))
+            #print('Added new base ' + str(len(self.layers[0].bases)) + '/' + str(self.layers[0].number_of_features))
             return
         
         labelmap = {'cl': 0, 'he': 1, 'di': 2, 'sp': 3}
