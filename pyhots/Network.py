@@ -61,26 +61,10 @@ class Network():
         [layer.reset_memory() for layer in self.layers]
         if self.merge_polarities: recording.p = np.zeros(len(recording))
 
+        # check if there are all cluster center initialised
         if len(self.layers[0].bases) < self.layers[0].number_of_features:
             # look for random event in recording, create surf and add as base
-            select = int(np.random.uniform(1, len(recording)))
-            event = recording[select]
-            radius = self.layers[0].radius
-
-            mask = (recording.t <= event.t)\
-                    & (recording.t >= event.t - self.layers[0].tau)\
-                    & (recording.x >= event.x - radius)\
-                    & (recording.x < event.x + radius + 1)\
-                    & (recording.y >= event.y - radius)\
-                    & (recording.y < event.y + radius + 1)
-            dims = self.layers[0].surface_dimensions
-            time_window = np.zeros((self.first_layer_polarities, dims[0], dims[1]))
-            for e in recording[mask]:
-                time_window[e.p, e.x + radius - event.x, e.y + radius - event.y] = e.t
-            time_surface = TimeSurface(self.layers[0], time_window)
-            self.layers[0].bases.append(time_surface.data)
-            self.layers[0].reboot_base_activity.append(0)
-            #print('Added new base ' + str(len(self.layers[0].bases)) + '/' + str(self.layers[0].number_of_features))
+            self.choose_new_basis_from_recording(recording)
             return
         
         labelmap = {'cl': 0, 'he': 1, 'di': 2, 'sp': 3}
@@ -123,3 +107,22 @@ class Network():
         cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
         fig.colorbar(axisImages[0], cax=cbar_ax)
         return fig, axes, axisImages
+
+    def choose_new_basis_from_recording(self, recording):
+        select = int(np.random.uniform(1, len(recording)))
+        event = recording[select]
+        radius = self.layers[0].radius
+        mask = (recording.t <= event.t)\
+                & (recording.t >= event.t - self.layers[0].tau)\
+                & (recording.x >= event.x - radius)\
+                & (recording.x < event.x + radius + 1)\
+                & (recording.y >= event.y - radius)\
+                & (recording.y < event.y + radius + 1)
+        dims = self.layers[0].surface_dimensions
+        time_window = np.zeros((self.first_layer_polarities, dims[0], dims[1]))
+        for e in recording[mask]:
+            time_window[e.p, e.x + radius - event.x, e.y + radius - event.y] = e.t
+        time_surface = TimeSurface(self.layers[0], time_window)
+        self.layers[0].bases.append(time_surface.data)
+        self.layers[0].reboot_base_activity.append(0)
+        #print('Added new base ' + str(len(self.layers[0].bases)) + '/' + str(self.layers[0].number_of_features))
