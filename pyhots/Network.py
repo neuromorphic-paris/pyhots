@@ -46,6 +46,9 @@ class Network():
         self.sensor_size = sensor_size
         if self.plot_evolution:
             self.fig, self.axes, self.axisImages = self._prepare_plotting(number_of_features_per_layer[0])
+        if self.total_number_of_events != None:
+            self.all_labels = []
+            
         self.processed_recordings = 0
 
     def __call__(self, recording, label):
@@ -66,11 +69,16 @@ class Network():
             # look for random event in recording, create surf and add as base
             self.choose_new_basis_from_recording(recording)
             return
-        
+            
         labelmap = {'cl': 0, 'he': 1, 'di': 2, 'sp': 3}
+        self.all_labels.append(labelmap[label])
+        
         for event in recording:
             for index, layer in enumerate(self.layers):
-                event = layer.process(event, labelmap[label])
+                event = layer.process(event)
+                
+        if self.total_number_of_events != None:
+            self.layers[0].recording_indices.append(self.layers[0].processed_events)
 
         self.processed_recordings += 1
 
