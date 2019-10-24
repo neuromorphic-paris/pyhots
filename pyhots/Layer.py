@@ -41,13 +41,15 @@ class Layer:
         timesurface = TimeSurface(self, timestamp_window)
         # TODO improve surface
 
+        if self.all_timesurfaces != []:
+            self.all_timesurfaces[self.processed_events,:,:,:] = timesurface.data
+
         # correlate with bases of this layer if enough events
         if timesurface.number_of_events() > self.minimum_events:
             best_prototype_id, corr_score = self._correlate_with_bases(timesurface)
             self.reboot_base_activity[best_prototype_id] = self.passed_events
 
             if self.all_timesurfaces != []:
-                self.all_timesurfaces[self.processed_events,:,:,:] = timesurface.data
                 self.all_best_ids[self.processed_events] = best_prototype_id
 
             event.p = best_prototype_id

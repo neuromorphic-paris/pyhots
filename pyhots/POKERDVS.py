@@ -18,7 +18,7 @@ class POKERDVS(Dataset):
             for file in files:
                 if file.endswith('dat'):
                     label = file[:2]
-                    if counts[label] < 16:
+                    if counts[label] < 17:
                         counts[label] += 1
                         event_file = loris.read_file(path + '/' + file)
                         events = event_file['events']
