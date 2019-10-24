@@ -14,11 +14,6 @@ class Layer:
         self.tau = time_constant
         self.radius = surface_dimensions[0] // 2
         self.minimum_events = 2 * self.radius
-        self.all_timesurfaces = []
-        if network.total_number_of_events != None:
-            self.all_timesurfaces = np.zeros((network.total_number_of_events, polarities, surface_dimensions[0], surface_dimensions[1]))
-            self.recording_indices = []
-            self.all_best_ids = np.zeros((network.total_number_of_events)) - 1
         self.bases = []
         self.basis_activations = np.zeros(number_of_features, dtype=np.int)
         self.processed_events = 0
@@ -41,16 +36,10 @@ class Layer:
         timesurface = TimeSurface(self, timestamp_window)
         # TODO improve surface
 
-        if self.all_timesurfaces != []:
-            self.all_timesurfaces[self.processed_events,:,:,:] = timesurface.data
-
         # correlate with bases of this layer if enough events
         if timesurface.number_of_events() > self.minimum_events:
             best_prototype_id, corr_score = self._correlate_with_bases(timesurface)
             self.reboot_base_activity[best_prototype_id] = self.passed_events
-
-            if self.all_timesurfaces != []:
-                self.all_best_ids[self.processed_events] = best_prototype_id
 
             event.p = best_prototype_id
 

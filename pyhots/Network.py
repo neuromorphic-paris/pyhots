@@ -19,7 +19,6 @@ class Network():
                  sensor_size,
                  learning_enabled=True,
                  plot_evolution=True,
-                 total_number_of_events=None,
                  reboot_bases=True,
                  merge_polarities=False):
         assert len(surface_dimensions_per_layer)\
@@ -31,7 +30,6 @@ class Network():
         self.learning_enabled = learning_enabled
         self.plot_evolution = plot_evolution
         self.minimum_events = 5
-        self.total_number_of_events = total_number_of_events
         self.merge_polarities = merge_polarities
         polarities = 1 if merge_polarities else 2
         self.first_layer_polarities = 1 if merge_polarities else 2
@@ -46,14 +44,11 @@ class Network():
         self.sensor_size = sensor_size
         if self.plot_evolution:
             self.fig, self.axes, self.axisImages = self._prepare_plotting(number_of_features_per_layer[0])
-        if self.total_number_of_events != None:
-            self.all_labels = []
         self.processed_recordings = 0
 
     def __call__(self, recording, label):
-        # recording = recording.view(type=np.recarray, dtype=[('t', np.float_), ('x', np.float_),
-                                                     # ('y', np.float_), ('p', np.float_)])
-        rfn.unstructured_to_structured(recprding, dtype=[('t', '<u8'), ('x', '<u2'), ('y', '<u2'), ('p', np.int8)])
+        recording = recording.view(type=np.recarray, dtype=[('t', np.int_), ('x', np.int_), ('y', np.int_), ('p', np.int_)])
+        recording = recording.reshape(-1)
         assert max(recording.x) < self.sensor_size[0]
         assert max(recording.y) < self.sensor_size[1]
         assert all(t1 <= t2 for t1, t2 in zip(recording.t, recording.t[1:]))
@@ -65,17 +60,11 @@ class Network():
             # look for random event in recording, create surf and add as base
             self.choose_new_basis_from_recording(recording)
             return
-            
-        labelmap = {'cl': 0, 'he': 1, 'di': 2, 'sp': 3}
-        self.all_labels.append(labelmap[label])
-        
+
         for event in recording:
             for index, layer in enumerate(self.layers):
                 event = layer.process(event)
-                
-        if self.total_number_of_events != None:
-            self.layers[0].recording_indices.append(self.layers[0].processed_events)
-
+  
         self.processed_recordings += 1
 
         if self.plot_evolution:
