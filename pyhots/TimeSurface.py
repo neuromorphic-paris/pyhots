@@ -4,14 +4,14 @@ import ipdb
 
 class TimeSurface:
     def __init__(self, layer, timestamp_context, decay='lin'):
+        assert timestamp_context.shape == (layer.polarities, 2 * layer.radius
+                                           + 1, 2 * layer.radius + 1)
         if decay == 'lin':
             timestamp_data = timestamp_context / (3 * layer.tau) + 1
             timestamp_data[timestamp_data < 0] = 0
         elif decay == 'exp':
             timestamp_data = np.exp(timestamp_context/layer.tau)
             timestamp_data[timestamp_context < (-3*layer.tau)] = 0
-        assert timestamp_context.shape == (layer.polarities, 2 * layer.radius
-                                           + 1, 2 * layer.radius + 1)
         self.data = timestamp_data
 
     def normalize(self):

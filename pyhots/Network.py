@@ -48,16 +48,12 @@ class Network():
             self.fig, self.axes, self.axisImages = self._prepare_plotting(number_of_features_per_layer[0])
         if self.total_number_of_events != None:
             self.all_labels = []
-            
         self.processed_recordings = 0
 
     def __call__(self, recording, label):
         # recording = recording.view(type=np.recarray, dtype=[('t', np.float_), ('x', np.float_),
                                                      # ('y', np.float_), ('p', np.float_)])
-        recording['is_increase'] = recording['is_increase'].astype(np.int8)
-        recording = recording.view(type=np.recarray,
-                                   dtype=[('t', '<u8'), ('x', '<u2'),
-                                          ('y', '<u2'), ('p', np.int8)])
+        rfn.unstructured_to_structured(recprding, dtype=[('t', '<u8'), ('x', '<u2'), ('y', '<u2'), ('p', np.int8)])
         assert max(recording.x) < self.sensor_size[0]
         assert max(recording.y) < self.sensor_size[1]
         assert all(t1 <= t2 for t1, t2 in zip(recording.t, recording.t[1:]))
