@@ -21,6 +21,7 @@ time_constants = [5e3]
 
 iterator = iter(testloader)
 events, target = next(iterator)
+print(target)
 
 # %%
 #for events, label in iter(testloader):
