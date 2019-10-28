@@ -1,6 +1,7 @@
 sanstitre*
 data*/
 *.pkl
+milled_nbs/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
