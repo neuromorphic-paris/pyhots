@@ -19,3 +19,8 @@ def plot_centers(centers, activations):
     cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
     fig.colorbar(axisImag, cax=cbar_ax)
     text = fig.suptitle('Cluster centers')
+    
+def create_histograms(labels, n_of_centers):
+    hists = []
+    [hists.append(np.histogram(x, bins=np.arange(0,n_of_centers+1))[0]/len(x)) for x in labels]
+    return hists
