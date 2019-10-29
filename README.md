@@ -8,4 +8,8 @@ Disclaimer: Not all libraries used in this repo are public yet.
 
 ## prerequisites
 - pip install ipympl --upgrade
-- install [jupyter-matplotlib](https://github.com/matplotlib/jupyter-matplotlib)
+- install [jupyter-matplotlib](https://github.com/matplotlib/jupyter-matplotlib) to plot within notebooks
+- install [jupyterlab-celltags](https://github.com/jupyterlab/jupyterlab-celltags) to enable papermill
+
+## parallelisation
+[papermill](https://github.com/nteract/papermill) is used to parametrize notebooks
