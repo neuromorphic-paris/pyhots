@@ -22,5 +22,5 @@ def plot_centers(centers, activations):
     
 def create_histograms(labels, n_of_centers):
     hists = []
-    [hists.append(np.histogram(x, bins=np.arange(0,n_of_centers+1))[0]/len(x)) for x in labels]
+    [hists.append(np.histogram(x, bins=np.arange(0,n_of_centers+1))[0]) for x in labels]
     return hists
