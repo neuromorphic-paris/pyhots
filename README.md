@@ -7,8 +7,8 @@ You will find different on- and offline algorithms using those datasets.
 Disclaimer: Not all libraries used in this repo are public yet.
 
 ## prerequisites
-- pip install ipympl --upgrade
-- install [jupyter-matplotlib](https://github.com/matplotlib/jupyter-matplotlib) to plot within notebooks
+- `pip install -r requirements.txt` 
+- install [jupyter-matplotlib](https://github.com/matplotlib/jupyter-matplotlib) to plot dynamically within notebooks
 - install [jupyterlab-celltags](https://github.com/jupyterlab/jupyterlab-celltags) to enable papermill
 
 ## parallelisation
