@@ -19,11 +19,10 @@ class Layer:
         self.processed_events = 0
         self.passed_events = 0
         self.refused_events = 0
-        # Reboot bases if they are useless
-        self.reboot_bases = reboot_bases
-        self.reboot_at = 5000 # number of events without activation before reboot
-        self.reboot_immunity = 5000 # once a base has this much number of acti, it can not be rebooted
-        self.reboot_factor = 1 # factor applied to the reboot
+        self.reboot_bases = reboot_bases  # Reboot bases if they are useless
+        self.reboot_at = 5000  # number of events without activation before reboot
+        self.reboot_immunity = 5000  # once a base has this much number of acti, it can not be rebooted
+        self.reboot_factor = 1  # factor applied to the reboot
         self.reboot_base_activity = []
 
     def process(self, event):
@@ -68,9 +67,10 @@ class Layer:
 
     def _correlate_with_bases(self, timesurface, method='cosine_similarity'):
             dists = []
+            mod = np.sum(timesurface.data**2)
             for index, basis in enumerate(self.bases):
                 if method == 'cosine_similarity':
-                    dists.append(self.cosine_similarity(basis, timesurface.data))
+                    dists.append(self.cosine_similarity(basis, timesurface.data, mod))
             best_index = np.argmax(dists)
             best_dist = dists[best_index]
             if self.network.learning_enabled:
@@ -85,5 +85,5 @@ class Layer:
     def learning_rate(self, activations):
         return 1 / (1 + activations)
 
-    def cosine_similarity(self, basis, surface):
-        return np.sum(basis*surface) / np.sqrt(np.sum(basis**2) * np.sum(surface**2))
+    def cosine_similarity(self, basis, surface, mod):
+        return np.sum(basis*surface) / np.sqrt(np.sum(basis**2) * mod)
