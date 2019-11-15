@@ -47,7 +47,8 @@ class Network():
         self.processed_recordings = 0
 
     def __call__(self, recording, label):
-        recording = recording.view(type=np.recarray, dtype=[('x', np.int32), ('y', np.int32), ('t', np.int32), ('p', np.int32)])
+        recording = recording.view(type=np.recarray, dtype=[('t', np.int_), ('x', np.int_), ('y', np.int_), ('p', np.int_)])
+        #recording = recording.view(type=np.recarray, dtype=[('x', np.int32), ('y', np.int32), ('t', np.int32), ('p', np.int32)]) # NMNIST
         recording = recording.reshape(-1)
         assert max(recording.x) < self.sensor_size[0]
         assert max(recording.y) < self.sensor_size[1]
