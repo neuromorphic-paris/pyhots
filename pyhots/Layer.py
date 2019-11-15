@@ -63,6 +63,8 @@ class Layer:
         self.timestamp_memory = np.zeros((self.polarities,
                                           self.network.sensor_size[0] + self.radius*2,
                                           self.network.sensor_size[1] + self.radius*2))
+        // list for memory
+        self.timestamp_memory = []
         self.timestamp_memory -= self.tau * 3 + 1
 
     def _correlate_with_bases(self, timesurface, method='cosine_similarity'):
