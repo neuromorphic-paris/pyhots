@@ -2,6 +2,7 @@ sanstitre*
 data*/
 *.pkl
 milled_nbs/*
+*.h5
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
