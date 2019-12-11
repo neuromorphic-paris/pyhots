@@ -1,5 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import os
+
 
 def plot_centers(centers, activations):
     plt.close('all')
@@ -23,22 +25,8 @@ def plot_centers(centers, activations):
 def create_histograms(labels, n_of_centers):
     return [np.histogram(x, bins=np.arange(0, n_of_centers+1))[0] for x in labels]
 
-def mask_isolated(events, filter_time, ordering, sensor_size):
-    x_index = ordering.find("x")
-    y_index = ordering.find("y")
-    t_index = ordering.find("t")
-    events_copy = np.zeros(events.shape, dtype=events.dtype)
-    copy_index = 0
-    width = int(sensor_size[0])
-    height = int(sensor_size[1])
-    timestamp_memory = np.zeros((width, height), dtype=events.dtype)
-    for event in events:
-        x = int(event[x_index])
-        y = int(event[y_index])
-        t = event[t_index]
-        timestamp_memory[x, y] = t + filter_time
-        if ((x > 0 and timestamp_memory[x-1, y] > t) or (x < width-1 and timestamp_memory[x+1, y] > t)
-             or (y > 0 and timestamp_memory[x, y-1] > t) or (y < height-1 and timestamp_memory[x, y+1] > t)):
-            events_copy[copy_index] = event
-            copy_index += 1
-    return events_copy[:copy_index]
+def get_all_file_paths(directory):
+    list_of_files = os.listdir(directory)
+    list_of_files.sort()
+    all_file_paths = [os.path.join(directory, entry) for entry in list_of_files]
+    return all_file_paths
