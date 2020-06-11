@@ -1,0 +1,9 @@
+scipy
+tqdm
+numpy
+tonic
+matplotlib
+ipdb
+scikit_learn
+papermill
+ipympl==0.3.3
