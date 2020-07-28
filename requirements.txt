@@ -1,7 +1,7 @@
 scipy
 tqdm
 numpy
-tonic
+tonic==0.1.0
 matplotlib
 ipdb
 scikit_learn
